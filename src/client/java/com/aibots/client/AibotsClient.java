@@ -1,8 +1,8 @@
 package com.aibots.client;
 
 import com.aibots.Aibots;
-import com.aibots.client.model.TestEntityModel;
-import com.aibots.client.renderer.TestEntityRenderer;
+import com.aibots.client.model.AiluuModel;
+import com.aibots.client.renderer.AiluuRenderer;
 import com.aibots.entity.ModEntityTypes;
 
 import net.fabricmc.api.ClientModInitializer;
@@ -11,12 +11,12 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 
 public class AibotsClient implements ClientModInitializer {
-    public static final ModelLayerLocation TEST_ENTITY_LAYER =
-        new ModelLayerLocation(Aibots.id("test_entity"), "main");
+    public static final ModelLayerLocation AILUU_LAYER =
+        new ModelLayerLocation(Aibots.id("ailuu"), "main");
 
     @Override
     public void onInitializeClient() {
-        EntityModelLayerRegistry.registerModelLayer(TEST_ENTITY_LAYER, TestEntityModel::createBodyLayer);
-        EntityRendererRegistry.register(ModEntityTypes.TEST_ENTITY, TestEntityRenderer::new);
+        EntityModelLayerRegistry.registerModelLayer(AILUU_LAYER, AiluuModel::createBodyLayer);
+        EntityRendererRegistry.register(ModEntityTypes.AILUU, AiluuRenderer::new);
     }
 }

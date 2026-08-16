@@ -15,15 +15,15 @@ public final class ModEntityTypes {
     private ModEntityTypes() {
     }
 
-    public static final EntityType<TestEntity> TEST_ENTITY = Registry.register(
+    public static final EntityType<AiluuEntity> AILUU = Registry.register(
         BuiltInRegistries.ENTITY_TYPE,
-        ResourceLocation.fromNamespaceAndPath(Aibots.MOD_ID, "test_entity"),
-        FabricEntityTypeBuilder.create(MobCategory.CREATURE, TestEntity::new)
+        ResourceLocation.fromNamespaceAndPath(Aibots.MOD_ID, "ailuu"),
+        FabricEntityTypeBuilder.create(MobCategory.CREATURE, AiluuEntity::new)
             .dimensions(EntityDimensions.scalable(0.6F, 1.8F))
             .build()
     );
 
     public static void registerAll() {
-        FabricDefaultAttributeRegistry.register(TEST_ENTITY, TestEntity.createMobAttributes());
+        FabricDefaultAttributeRegistry.register(AILUU, AiluuEntity.createMobAttributes());
     }
 }

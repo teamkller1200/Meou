@@ -24,13 +24,13 @@ import org.slf4j.LoggerFactory;
 import com.aibots.Aibots;
 import com.aibots.entity.ai.FollowCompanionGoal;
 
-public class TestEntity extends PathfinderMob {
+public class AiluuEntity extends PathfinderMob {
     private static final Logger LOGGER = LoggerFactory.getLogger(Aibots.MOD_ID);
 
     @Nullable
     private UUID ownerId;
 
-    public TestEntity(EntityType<? extends TestEntity> entityType, Level level) {
+    public AiluuEntity(EntityType<? extends AiluuEntity> entityType, Level level) {
         super(entityType, level);
         this.setPersistenceRequired();
     }
@@ -62,7 +62,7 @@ public class TestEntity extends PathfinderMob {
         if (this.level() instanceof ServerLevel serverLevel) {
             Player owner = serverLevel.getServer().getPlayerList().getPlayer(this.ownerId);
             if (owner == null) {
-                LOGGER.debug("[TestEntity {}] ownerId set but owner player not found (offline?)", this.getUUID());
+                LOGGER.debug("[Ailuu {}] ownerId set but owner player not found (offline?)", this.getUUID());
             }
             return owner;
         }
@@ -71,7 +71,7 @@ public class TestEntity extends PathfinderMob {
 
     public void setOwner(Player player) {
         this.ownerId = player.getUUID();
-        LOGGER.info("[TestEntity {}] owner set to {}", this.getUUID(), this.ownerId);
+        LOGGER.info("[Ailuu {}] owner set to {}", this.getUUID(), this.ownerId);
     }
 
     public boolean hasOwner() {
@@ -91,16 +91,16 @@ public class TestEntity extends PathfinderMob {
 
     public boolean tryAutoAssignOwner() {
         if (this.ownerId != null) {
-            LOGGER.info("[TestEntity {}] already has owner {}: skip auto assign", this.getUUID(), this.ownerId);
+            LOGGER.info("[Ailuu {}] already has owner {}: skip auto assign", this.getUUID(), this.ownerId);
             return true;
         }
         Player nearest = this.level().getNearestPlayer(this, 16.0D);
         if (nearest != null) {
             this.ownerId = nearest.getUUID();
-            LOGGER.info("[TestEntity {}] auto-assigned owner {}", this.getUUID(), this.ownerId);
+            LOGGER.info("[Ailuu {}] auto-assigned owner {}", this.getUUID(), this.ownerId);
             return true;
         }
-        LOGGER.info("[TestEntity {}] no nearby player within 16 blocks to assign owner", this.getUUID());
+        LOGGER.info("[Ailuu {}] no nearby player within 16 blocks to assign owner", this.getUUID());
         return false;
     }
 
