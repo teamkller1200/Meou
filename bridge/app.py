@@ -7,6 +7,7 @@ calls LM Studio (OpenAI-compatible local API), and returns an action command.
 import json
 import logging
 import os
+from datetime import datetime, timezone
 from typing import List, Optional
 
 import httpx
@@ -14,6 +15,21 @@ from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger("bridge")
+
+LOG_FILE = os.environ.get("LOG_FILE", "bridge/chat_log.jsonl")
+
+
+def log_interaction(request_payload: dict, response_data: dict) -> None:
+    try:
+        entry = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "request": request_payload,
+            "response": response_data,
+        }
+        with open(LOG_FILE, "a", encoding="utf-8") as f:
+            f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+    except Exception as e:
+        logger.warning(f"Failed to write log: {e}")
 
 LM_STUDIO_URL = os.environ.get("LM_STUDIO_URL", "http://127.0.0.1:1234/v1")
 
@@ -184,4 +200,9 @@ def health() -> dict:
 
 @app.post("/context")
 def handle_context(payload: ContextPayload) -> ActionResponse:
-    return call_lm_studio(payload)
+    result = call_lm_studio(payload)
+    log_interaction(
+        payload.model_dump(mode="json"),
+        result.model_dump(mode="json"),
+    )
+    return result
