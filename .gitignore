@@ -1,3 +1,9 @@
+# python / bridge
+
+.venv/
+__pycache__/
+*.pyc
+
 # gradle
 
 .gradle/
