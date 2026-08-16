@@ -32,6 +32,7 @@ public class TestEntity extends PathfinderMob {
 
     public TestEntity(EntityType<? extends TestEntity> entityType, Level level) {
         super(entityType, level);
+        this.setPersistenceRequired();
     }
 
     public static AttributeSupplier.Builder createMobAttributes() {
