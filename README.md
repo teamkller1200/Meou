@@ -88,38 +88,7 @@ Minecraft Client / Server (Fabric 1.21.1)
 
 ---
 
-## 4. Implementation Roadmap (MVP Milestone)
-
-1. **Step 1: Entity rename & cleanup** *(done)*
-   - TestEntity → AiluuEntity, model and renderer renamed accordingly
-   - Remove `bridge/` directory
-   - Remove bridge code from Aibots.java
-
-2. **Step 2: Item holding & equipment**
-   - Add hand slot to AiluuEntity
-   - Accept item from player via interaction
-   - Render held item on the model
-
-3. **Step 3: Skill system implementation**
-   - AiluuSkill interface / enum (5 skills)
-   - Activation logic for each skill
-   - SkillAutoTriggerGoal: condition monitoring + auto-trigger
-   - Cooldown management (NBT persistent)
-
-4. **Step 4: Skill selection GUI**
-   - SkillScreenHandler (server container, 0 slots)
-   - SkillScreen (client, 5 buttons)
-   - CustomPayload for skill selection communication
-   - Open GUI via interactMob()
-
-5. **Step 5: Multi-companion management & integration testing**
-   - Verify multiple Ailuu management
-   - Texture and model tuning
-   - Integration testing
-
----
-
-## 5. Technology Stack
+## 4. Technology Stack
 
 | Component | Technology | Notes |
 | :--- | :--- | :--- |
@@ -132,7 +101,7 @@ Minecraft Client / Server (Fabric 1.21.1)
 
 ---
 
-## 6. Building & Running
+## 5. Building & Running
 
 ### Prerequisites
 
@@ -169,7 +138,7 @@ The `run/` directory is a gitignored development workspace.
 
 ---
 
-## 7. File Structure (Target)
+## 6. File Structure (Target)
 
 ```
 src/
@@ -185,16 +154,16 @@ src/
 │   │   └── ai/
 │   │       └── FollowCompanionGoal.java
 │   ├── screen/
-│   │   ├── AiluuScreenHandler.java  # Inventory GUI (implemented)
+│   │   ├── AiluuScreenHandler.java  # Inventory GUI
 │   │   ├── ModMenuTypes.java        # Menu type registration
-│   │   └── SkillPayload.java        # Custom packet (planned)
+│   │   └── SkillPayload.java        # Custom packet
 │   └── item/
-│       └── ModItems.java            # Spawn egg (planned)
+│       └── ModItems.java            # Spawn egg
 ├── client/java/com/aibots/client/
 │   ├── AibotsClient.java            # Client entry point
 │   ├── screen/
-│   │   ├── AiluuScreen.java         # Inventory GUI (implemented)
-│   │   └── SkillScreen.java         # Skill selection GUI (planned)
+│   │   ├── AiluuScreen.java         # Inventory GUI
+│   │   └── SkillScreen.java         # Skill selection GUI
 │   ├── model/
 │   │   └── AiluuModel.java          # Custom cat model
 │   └── renderer/

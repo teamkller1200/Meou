@@ -89,38 +89,7 @@ Minecraft Client / Server (Fabric 1.21.1)
 
 ---
 
-## 4. 実装ロードマップ（MVP Milestone）
-
-1. **Step 1: エンティティリネーム & クリーンアップ**
-   - TestEntity → AiluuEntity, モデル・Renderer も同様に改名
-   - bridge/ ディレクトリ削除
-   - Aibots.java からの橋渡しコード削除
-
-2. **Step 2: アイテム手持ち・装備**
-   - AiluuEntity に手持ちスロット追加
-   - プレイヤーからアイテムを受け取るインタラクション
-   - モデルへの手持ち表示
-
-3. **Step 3: スキルシステム実装**
-   - AiluuSkill インターフェース / enum 定義（5種）
-   - 各スキルの発動ロジック（回復 / 応援 / 採集 / 警報 / 照明）
-   - SkillAutoTriggerGoal: 状況監視＋自動発動
-   - クールダウン管理（NBT保存対応）
-
-4. **Step 4: スキル選択GUI**
-   - SkillScreenHandler（サーバー側コンテナ、0スロット）
-   - SkillScreen（クライアント側、5ボタン）
-   - CustomPayload でのスキル選択通信
-   - interactMob() でGUIを開く
-
-5. **Step 5: 複数体管理 & 結合テスト**
-   - 複数 Ailuu 管理の動作確認
-   - テクスチャ・モデル調整
-   - 結合テスト
-
----
-
-## 5. 技術スタック
+## 4. 技術スタック
 
 | コンポーネント | 採用技術 | 備考 |
 | :--- | :--- | :--- |
@@ -133,7 +102,7 @@ Minecraft Client / Server (Fabric 1.21.1)
 
 ---
 
-## 6. ファイル構成（最終形）
+## 5. ファイル構成（最終形）
 
 ```
 src/
@@ -149,7 +118,7 @@ src/
 │   │   └── ai/
 │   │       └── FollowCompanionGoal.java
 │   ├── screen/
-│   │   ├── AiluuScreenHandler.java  # インベントリGUI (実装済み)
+│   │   ├── AiluuScreenHandler.java  # インベントリGUI
 │   │   ├── ModMenuTypes.java        # メニュータイプ登録
 │   │   └── SkillPayload.java        # カスタムパケット
 │   └── item/
@@ -157,7 +126,7 @@ src/
 ├── client/java/com/aibots/client/
 │   ├── AibotsClient.java            # クライアントエントリ
 │   ├── screen/
-│   │   ├── AiluuScreen.java         # インベントリGUI (実装済み)
+│   │   ├── AiluuScreen.java         # インベントリGUI
 │   │   └── SkillScreen.java         # スキル選択GUI
 │   ├── model/
 │   │   └── AiluuModel.java          # カスタム猫モデル
