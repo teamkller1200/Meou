@@ -8,14 +8,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.aibots.Aibots;
-import com.aibots.entity.AiluuEntity;
+import com.aibots.entity.MeouEntity;
 
 public class SkillAutoTriggerGoal extends Goal {
     private static final Logger LOGGER = LoggerFactory.getLogger(Aibots.MOD_ID);
 
-    private final AiluuEntity companion;
+    private final MeouEntity companion;
 
-    public SkillAutoTriggerGoal(AiluuEntity companion) {
+    public SkillAutoTriggerGoal(MeouEntity companion) {
         this.companion = companion;
         this.setFlags(EnumSet.noneOf(Goal.Flag.class));
     }
@@ -36,12 +36,12 @@ public class SkillAutoTriggerGoal extends Goal {
             this.companion.setSkillCooldownTicks(this.companion.getSkillCooldownTicks() - 1);
             return;
         }
-        AiluuSkill skill = this.companion.getSelectedSkill();
+        MeouSkill skill = this.companion.getSelectedSkill();
         if (skill.canTrigger(this.companion)) {
             skill.activate(this.companion);
             this.companion.setSkillCooldownTicks(skill.getCooldownTicks());
-            AiluuDialogue.say(this.companion, "skill." + skill.getKey());
-            LOGGER.debug("[Ailuu {}] skill {} triggered", this.companion.getUUID(), skill.getKey());
+            MeouDialogue.say(this.companion, "skill." + skill.getKey());
+            LOGGER.debug("[Meou {}] skill {} triggered", this.companion.getUUID(), skill.getKey());
         }
     }
 }

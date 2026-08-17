@@ -2,7 +2,7 @@ package com.aibots.client.model;
 
 import com.google.common.collect.ImmutableList;
 
-import com.aibots.entity.AiluuEntity;
+import com.aibots.entity.MeouEntity;
 
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -12,11 +12,11 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 
-public class AiluuModel extends HierarchicalModel<AiluuEntity> {
+public class MeouModel extends HierarchicalModel<MeouEntity> {
     private final ModelPart root;
     private final ModelPart body;
 
-    public AiluuModel(ModelPart root) {
+    public MeouModel(ModelPart root) {
         this.root = root;
         this.body = root.getChild("body");
     }
@@ -40,6 +40,6 @@ public class AiluuModel extends HierarchicalModel<AiluuEntity> {
     }
 
     @Override
-    public void setupAnim(AiluuEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(MeouEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
     }
 }

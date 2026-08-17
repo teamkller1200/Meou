@@ -32,11 +32,11 @@ import org.slf4j.LoggerFactory;
 
 import com.aibots.Aibots;
 import com.aibots.entity.ai.FollowCompanionGoal;
-import com.aibots.entity.skill.AiluuSkill;
+import com.aibots.entity.skill.MeouSkill;
 import com.aibots.entity.skill.SkillAutoTriggerGoal;
-import com.aibots.screen.AiluuScreenHandler;
+import com.aibots.screen.MeouScreenHandler;
 
-public class AiluuEntity extends PathfinderMob {
+public class MeouEntity extends PathfinderMob {
     private static final Logger LOGGER = LoggerFactory.getLogger(Aibots.MOD_ID);
 
     public static final int HAND_SLOT = 0;
@@ -50,7 +50,7 @@ public class AiluuEntity extends PathfinderMob {
 
     private int unownedTicks;
 
-    private AiluuSkill selectedSkill = AiluuSkill.HEAL;
+    private MeouSkill selectedSkill = MeouSkill.HEAL;
     private int skillCooldownTicks;
     private int attackModeTicks;
     private int lastDialogueTick;
@@ -58,7 +58,7 @@ public class AiluuEntity extends PathfinderMob {
 
     private final SimpleContainer inventory = new SimpleContainer(TOTAL_SLOTS);
 
-    public AiluuEntity(EntityType<? extends AiluuEntity> entityType, Level level) {
+    public MeouEntity(EntityType<? extends MeouEntity> entityType, Level level) {
         super(entityType, level);
         this.setPersistenceRequired();
         this.setCustomNameVisible(true);
@@ -78,7 +78,7 @@ public class AiluuEntity extends PathfinderMob {
         this.goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.2D, false) {
             @Override
             public boolean canUse() {
-                return AiluuEntity.this.attackModeTicks > 0 && super.canUse();
+                return MeouEntity.this.attackModeTicks > 0 && super.canUse();
             }
         });
         this.goalSelector.addGoal(2, new FollowCompanionGoal(this, 2.5D, 32.0D));
@@ -121,7 +121,7 @@ public class AiluuEntity extends PathfinderMob {
         if (this.level() instanceof ServerLevel serverLevel) {
             Player owner = serverLevel.getServer().getPlayerList().getPlayer(this.ownerId);
             if (owner == null) {
-                LOGGER.debug("[Ailuu {}] ownerId set but owner player not found (offline?)", this.getUUID());
+                LOGGER.debug("[Meou {}] ownerId set but owner player not found (offline?)", this.getUUID());
             }
             return owner;
         }
@@ -130,18 +130,18 @@ public class AiluuEntity extends PathfinderMob {
 
     public void setOwner(Player player) {
         this.ownerId = player.getUUID();
-        LOGGER.info("[Ailuu {}] owner set to {}", this.getUUID(), this.ownerId);
+        LOGGER.info("[Meou {}] owner set to {}", this.getUUID(), this.ownerId);
     }
 
     public boolean hasOwner() {
         return this.ownerId != null;
     }
 
-    public AiluuSkill getSelectedSkill() {
+    public MeouSkill getSelectedSkill() {
         return this.selectedSkill;
     }
 
-    public void setSelectedSkill(AiluuSkill skill) {
+    public void setSelectedSkill(MeouSkill skill) {
         this.selectedSkill = skill;
     }
 
@@ -202,8 +202,8 @@ public class AiluuEntity extends PathfinderMob {
         if (!this.level().isClientSide) {
             if (player.isShiftKeyDown() && player == getOwner()) {
                 player.openMenu(new SimpleMenuProvider(
-                    (syncId, inv, p) -> new AiluuScreenHandler(syncId, inv, this.inventory, this),
-                    Component.translatable("container.aibots.ailuu")
+                    (syncId, inv, p) -> new MeouScreenHandler(syncId, inv, this.inventory, this),
+                    Component.translatable("container.aibots.meou")
                 ));
                 return InteractionResult.CONSUME;
             }
@@ -224,16 +224,16 @@ public class AiluuEntity extends PathfinderMob {
 
     public boolean tryAutoAssignOwner() {
         if (this.ownerId != null) {
-            LOGGER.info("[Ailuu {}] already has owner {}: skip auto assign", this.getUUID(), this.ownerId);
+            LOGGER.info("[Meou {}] already has owner {}: skip auto assign", this.getUUID(), this.ownerId);
             return true;
         }
         Player nearest = this.level().getNearestPlayer(this, 16.0D);
         if (nearest != null) {
             this.ownerId = nearest.getUUID();
-            LOGGER.info("[Ailuu {}] auto-assigned owner {}", this.getUUID(), this.ownerId);
+            LOGGER.info("[Meou {}] auto-assigned owner {}", this.getUUID(), this.ownerId);
             return true;
         }
-        LOGGER.info("[Ailuu {}] no nearby player within 16 blocks to assign owner", this.getUUID());
+        LOGGER.info("[Meou {}] no nearby player within 16 blocks to assign owner", this.getUUID());
         return false;
     }
 
@@ -254,7 +254,7 @@ public class AiluuEntity extends PathfinderMob {
         if (nbt.contains("Owner")) {
             this.ownerId = nbt.getUUID("Owner");
         }
-        this.selectedSkill = AiluuSkill.byKey(nbt.getString("SelectedSkill"));
+        this.selectedSkill = MeouSkill.byKey(nbt.getString("SelectedSkill"));
         this.skillCooldownTicks = nbt.getInt("SkillCooldown");
         ContainerHelper.loadAllItems(nbt, this.inventory.getItems(), this.registryAccess());
     }

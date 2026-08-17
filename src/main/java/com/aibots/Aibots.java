@@ -10,9 +10,9 @@ import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.aibots.entity.AiluuEntity;
+import com.aibots.entity.MeouEntity;
 import com.aibots.entity.ModEntityTypes;
-import com.aibots.entity.skill.AiluuSkill;
+import com.aibots.entity.skill.MeouSkill;
 import com.aibots.screen.ModMenuTypes;
 import com.aibots.screen.RenamePayload;
 import com.aibots.screen.SkillSelectPayload;
@@ -36,23 +36,23 @@ public class Aibots implements ModInitializer {
 
         ServerPlayNetworking.registerGlobalReceiver(SkillSelectPayload.TYPE, (payload, context) -> {
             context.player().server.execute(() -> {
-                if (context.player().level().getEntity(payload.entityId()) instanceof AiluuEntity ailuu) {
-                    AiluuSkill skill = AiluuSkill.byOrdinal(payload.skillOrdinal());
-                    ailuu.setSelectedSkill(skill);
-                    LOGGER.debug("[Ailuu {}] skill set to {}", payload.entityId(), skill.getKey());
+                if (context.player().level().getEntity(payload.entityId()) instanceof MeouEntity meou) {
+                    MeouSkill skill = MeouSkill.byOrdinal(payload.skillOrdinal());
+                    meou.setSelectedSkill(skill);
+                    LOGGER.debug("[Meou {}] skill set to {}", payload.entityId(), skill.getKey());
                 }
             });
         });
 
         ServerPlayNetworking.registerGlobalReceiver(RenamePayload.TYPE, (payload, context) -> {
             context.player().server.execute(() -> {
-                if (context.player().level().getEntity(payload.entityId()) instanceof AiluuEntity ailuu) {
+                if (context.player().level().getEntity(payload.entityId()) instanceof MeouEntity meou) {
                     String name = payload.name().trim();
                     if (!name.isEmpty()) {
-                        ailuu.setCustomName(Component.literal(name));
-                        ailuu.setCustomNameVisible(true);
+                        meou.setCustomName(Component.literal(name));
+                        meou.setCustomNameVisible(true);
                     }
-                    LOGGER.debug("[Ailuu {}] renamed to {}", payload.entityId(), name);
+                    LOGGER.debug("[Meou {}] renamed to {}", payload.entityId(), name);
                 }
             });
         });

@@ -13,12 +13,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.aibots.Aibots;
-import com.aibots.entity.AiluuEntity;
+import com.aibots.entity.MeouEntity;
 
 public class FollowCompanionGoal extends Goal {
     private static final Logger LOGGER = LoggerFactory.getLogger(Aibots.MOD_ID);
 
-    private final AiluuEntity companion;
+    private final MeouEntity companion;
     private final double followDistance;
     private final double teleportDistance;
     @Nullable
@@ -26,7 +26,7 @@ public class FollowCompanionGoal extends Goal {
     private int timeToRecalcPath;
     private float oldWaterCost;
 
-    public FollowCompanionGoal(AiluuEntity companion, double followDistance, double teleportDistance) {
+    public FollowCompanionGoal(MeouEntity companion, double followDistance, double teleportDistance) {
         this.companion = companion;
         this.followDistance = followDistance;
         this.teleportDistance = teleportDistance;
@@ -76,7 +76,7 @@ public class FollowCompanionGoal extends Goal {
         if (distSqr > this.teleportDistance * this.teleportDistance) {
             this.companion.teleportToOwner(this.owner);
             this.tryTeleportToNear(this.companion, this.owner);
-            com.aibots.entity.skill.AiluuDialogue.say(this.companion, "teleport");
+            com.aibots.entity.skill.MeouDialogue.say(this.companion, "teleport");
             return;
         }
 
@@ -89,7 +89,7 @@ public class FollowCompanionGoal extends Goal {
         }
     }
 
-    private void tryTeleportToNear(AiluuEntity companion, LivingEntity owner) {
+    private void tryTeleportToNear(MeouEntity companion, LivingEntity owner) {
         PathNavigation navigation = companion.getNavigation();
         navigation.moveTo(owner, 1.0D);
     }

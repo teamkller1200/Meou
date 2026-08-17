@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Minecraft Fabric モッド `aibots`（コンパニオン "Ailuu"、MC 1.21.1）。外部 AI / Python ブリッジは一切使わない。仕様は `README.md`（日本語）参照。
+Minecraft Fabric モッド `aibots`（コンパニオン "Meou"、MC 1.21.1）。外部 AI / Python ブリッジは一切使わない。仕様は `README.md`（英語）参照。
 
 ## ビルド / 実行
 
@@ -22,7 +22,7 @@ Minecraft Fabric モッド `aibots`（コンパニオン "Ailuu"、MC 1.21.1）�
 
 ## 実装状況（README の「最終形」とは現状が異なる）
 
-- **実装済み**: `AiluuEntity`（`PathfinderMob` 継承、owner UUID を NBT キー `Owner` に保存、`setPersistenceRequired()`）、`FollowCompanionGoal`（追従 + 遠距離時テレポート）、アイテム手持ち + 27スロット保管庫（`AiluuScreenHandler` / `AiluuScreen`、Shift+右クリックで開く）、スキルシステム（`entity/skill/` パッケージ: `AiluuSkill` enum 5種 + `SkillAutoTriggerGoal`、選択スキルとクールダウンは NBT キー `SelectedSkill` / `SkillCooldown` に永続化、デフォルト `HEAL`）。
+- **実装済み**: `MeouEntity`（`PathfinderMob` 継承、owner UUID を NBT キー `Owner` に保存、`setPersistenceRequired()`）、`FollowCompanionGoal`（追従 + 遠距離時テレポート）、アイテム手持ち + 27スロット保管庫（`MeouScreenHandler` / `MeouScreen`、Shift+右クリックで開く）、スキルシステム（`entity/skill/` パッケージ: `MeouSkill` enum 5種 + `SkillAutoTriggerGoal`、選択スキルとクールダウンは NBT キー `SelectedSkill` / `SkillCooldown` に永続化、デフォルト `HEAL`）。
 - **未実装**: スキル選択 GUI / `CustomPayload` 通信（スキル選択の仕組み自体は NBT 保存のみ）、スポーンエッグ、サウンド、マルチ体管理、手持ちアイテムのレンダリング。README のファイル構成は目標であり、現在のソースツリーを表していない。
 
 ## Mixin

@@ -14,12 +14,12 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
-import com.aibots.entity.AiluuEntity;
+import com.aibots.entity.MeouEntity;
 
-public enum AiluuSkill {
+public enum MeouSkill {
     HEAL("heal", 200) {
         @Override
-        public boolean canTrigger(AiluuEntity companion) {
+        public boolean canTrigger(MeouEntity companion) {
             Player owner = companion.getOwner();
             return owner != null
                 && (owner.getHealth() <= 6.0F
@@ -28,7 +28,7 @@ public enum AiluuSkill {
         }
 
         @Override
-        public void activate(AiluuEntity companion) {
+        public void activate(MeouEntity companion) {
             Player owner = companion.getOwner();
             if (owner == null) {
                 return;
@@ -40,12 +40,12 @@ public enum AiluuSkill {
     },
     CHEER("cheer", 300) {
         @Override
-        public boolean canTrigger(AiluuEntity companion) {
+        public boolean canTrigger(MeouEntity companion) {
             return hasHostileNearby(companion);
         }
 
         @Override
-        public void activate(AiluuEntity companion) {
+        public void activate(MeouEntity companion) {
             Player owner = companion.getOwner();
             if (owner != null) {
                 owner.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 200, 0));
@@ -54,7 +54,7 @@ public enum AiluuSkill {
     },
     COLLECT("collect", 100) {
         @Override
-        public boolean canTrigger(AiluuEntity companion) {
+        public boolean canTrigger(MeouEntity companion) {
             return !companion.level().getEntitiesOfClass(
                 ItemEntity.class,
                 companion.getBoundingBox().inflate(8.0D),
@@ -63,7 +63,7 @@ public enum AiluuSkill {
         }
 
         @Override
-        public void activate(AiluuEntity companion) {
+        public void activate(MeouEntity companion) {
             Player owner = companion.getOwner();
             if (owner == null) {
                 return;
@@ -84,12 +84,12 @@ public enum AiluuSkill {
     },
     ALERT("alert", 200) {
         @Override
-        public boolean canTrigger(AiluuEntity companion) {
+        public boolean canTrigger(MeouEntity companion) {
             return hasHostileNearby(companion);
         }
 
         @Override
-        public void activate(AiluuEntity companion) {
+        public void activate(MeouEntity companion) {
             for (LivingEntity target : hostileNearby(companion, 8.0D)) {
                 target.addEffect(new MobEffectInstance(MobEffects.GLOWING, 100, 0));
             }
@@ -97,7 +97,7 @@ public enum AiluuSkill {
     },
     LIGHT("light", 200) {
         @Override
-        public boolean canTrigger(AiluuEntity companion) {
+        public boolean canTrigger(MeouEntity companion) {
             Player owner = companion.getOwner();
             if (owner == null || owner.getInventory().countItem(Items.TORCH) <= 0) {
                 return false;
@@ -106,7 +106,7 @@ public enum AiluuSkill {
         }
 
         @Override
-        public void activate(AiluuEntity companion) {
+        public void activate(MeouEntity companion) {
             Player owner = companion.getOwner();
             if (owner == null) {
                 return;
@@ -120,7 +120,7 @@ public enum AiluuSkill {
     },
     ATTACK("attack", 240) {
         @Override
-        public boolean canTrigger(AiluuEntity companion) {
+        public boolean canTrigger(MeouEntity companion) {
             if (companion.getOwner() == null) {
                 return false;
             }
@@ -128,7 +128,7 @@ public enum AiluuSkill {
         }
 
         @Override
-        public void activate(AiluuEntity companion) {
+        public void activate(MeouEntity companion) {
             List<LivingEntity> hostiles = hostileNearby(companion, 10.0D);
             LivingEntity target = null;
             double nearestSq = Double.MAX_VALUE;
@@ -149,7 +149,7 @@ public enum AiluuSkill {
     private final String key;
     private final int cooldownTicks;
 
-    AiluuSkill(String key, int cooldownTicks) {
+    MeouSkill(String key, int cooldownTicks) {
         this.key = key;
         this.cooldownTicks = cooldownTicks;
     }
@@ -166,12 +166,12 @@ public enum AiluuSkill {
         return "skill.aibots." + this.key + ".desc";
     }
 
-    public abstract boolean canTrigger(AiluuEntity companion);
+    public abstract boolean canTrigger(MeouEntity companion);
 
-    public abstract void activate(AiluuEntity companion);
+    public abstract void activate(MeouEntity companion);
 
-    public static AiluuSkill byKey(String key) {
-        for (AiluuSkill skill : values()) {
+    public static MeouSkill byKey(String key) {
+        for (MeouSkill skill : values()) {
             if (skill.key.equals(key)) {
                 return skill;
             }
@@ -179,19 +179,19 @@ public enum AiluuSkill {
         return HEAL;
     }
 
-    public static AiluuSkill byOrdinal(int ordinal) {
-        AiluuSkill[] skills = values();
+    public static MeouSkill byOrdinal(int ordinal) {
+        MeouSkill[] skills = values();
         if (ordinal < 0 || ordinal >= skills.length) {
             return HEAL;
         }
         return skills[ordinal];
     }
 
-    private static boolean hasHostileNearby(AiluuEntity companion) {
+    private static boolean hasHostileNearby(MeouEntity companion) {
         return !hostileNearby(companion, 8.0D).isEmpty();
     }
 
-    private static List<LivingEntity> hostileNearby(AiluuEntity companion, double radius) {
+    private static List<LivingEntity> hostileNearby(MeouEntity companion, double radius) {
         return companion.level().getEntitiesOfClass(
             LivingEntity.class,
             companion.getBoundingBox().inflate(radius),
@@ -199,7 +199,7 @@ public enum AiluuSkill {
         );
     }
 
-    private static BlockPos findDarkAirBlock(AiluuEntity companion) {
+    private static BlockPos findDarkAirBlock(MeouEntity companion) {
         BlockPos pos = companion.blockPosition();
         for (BlockPos candidate : BlockPos.betweenClosed(
             pos.getX() - 3, pos.getY() - 2, pos.getZ() - 3,

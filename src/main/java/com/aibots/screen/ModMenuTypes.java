@@ -11,10 +11,10 @@ public final class ModMenuTypes {
     private ModMenuTypes() {
     }
 
-    public static final MenuType<AiluuScreenHandler> AILUU = Registry.register(
+    public static final MenuType<MeouScreenHandler> MEOU = Registry.register(
         BuiltInRegistries.MENU,
-        Aibots.id("ailuu"),
-        new MenuType<>(AiluuScreenHandler::new, FeatureFlags.VANILLA_SET)
+        Aibots.id("meou"),
+        new MenuType<>(MeouScreenHandler::new, FeatureFlags.VANILLA_SET)
     );
 
     public static void registerAll() {

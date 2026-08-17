@@ -1,8 +1,8 @@
 package com.aibots.client.screen;
 
 import com.aibots.Aibots;
-import com.aibots.entity.skill.AiluuSkill;
-import com.aibots.screen.AiluuScreenHandler;
+import com.aibots.entity.skill.MeouSkill;
+import com.aibots.screen.MeouScreenHandler;
 import com.aibots.screen.RenamePayload;
 import com.aibots.screen.SkillSelectPayload;
 
@@ -16,13 +16,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 
-public class AiluuScreen extends AbstractContainerScreen<AiluuScreenHandler> {
+public class MeouScreen extends AbstractContainerScreen<MeouScreenHandler> {
     private static final ResourceLocation TEXTURE =
-        ResourceLocation.fromNamespaceAndPath(Aibots.MOD_ID, "textures/gui/container/ailuu.png");
+        ResourceLocation.fromNamespaceAndPath(Aibots.MOD_ID, "textures/gui/container/meou.png");
     private static final ResourceLocation TAB_SELECTED =
-        ResourceLocation.fromNamespaceAndPath(Aibots.MOD_ID, "textures/gui/ailuu_tab_selected.png");
+        ResourceLocation.fromNamespaceAndPath(Aibots.MOD_ID, "textures/gui/meou_tab_selected.png");
     private static final ResourceLocation TAB_UNSELECTED =
-        ResourceLocation.fromNamespaceAndPath(Aibots.MOD_ID, "textures/gui/ailuu_tab_unselected.png");
+        ResourceLocation.fromNamespaceAndPath(Aibots.MOD_ID, "textures/gui/meou_tab_unselected.png");
 
     private static final ResourceLocation BUTTON = ResourceLocation.withDefaultNamespace("widget/button");
     private static final ResourceLocation BUTTON_DISABLED =
@@ -64,7 +64,7 @@ public class AiluuScreen extends AbstractContainerScreen<AiluuScreenHandler> {
     private EditBox nameEditBox;
     private Button renameButton;
 
-    public AiluuScreen(AiluuScreenHandler handler, Inventory inventory, Component title) {
+    public MeouScreen(MeouScreenHandler handler, Inventory inventory, Component title) {
         super(handler, inventory, title);
         this.imageWidth = INVENTORY_WIDTH;
         this.imageHeight = INVENTORY_HEIGHT;
@@ -132,7 +132,7 @@ public class AiluuScreen extends AbstractContainerScreen<AiluuScreenHandler> {
     }
 
     private void renderSkillTab(GuiGraphics graphics, int x, int y) {
-        for (AiluuSkill skill : AiluuSkill.values()) {
+        for (MeouSkill skill : MeouSkill.values()) {
             int idx = skill.ordinal();
             int col = idx % 2;
             int row = idx / 2;
@@ -146,7 +146,7 @@ public class AiluuScreen extends AbstractContainerScreen<AiluuScreenHandler> {
     }
 
     private void renderSkillDescription(GuiGraphics graphics, int x, int y) {
-        AiluuSkill selected = AiluuSkill.byOrdinal(this.menu.getSelectedSkillIndex());
+        MeouSkill selected = MeouSkill.byOrdinal(this.menu.getSelectedSkillIndex());
         int cx = x + this.imageWidth / 2;
         int top = y + 112;
         String desc = Component.translatable(selected.descriptionKey()).getString();
@@ -189,7 +189,7 @@ public class AiluuScreen extends AbstractContainerScreen<AiluuScreenHandler> {
                 return true;
             }
             if (this.currentTab == TAB_SKILL) {
-                for (AiluuSkill skill : AiluuSkill.values()) {
+                for (MeouSkill skill : MeouSkill.values()) {
                     int idx = skill.ordinal();
                     int col = idx % 2;
                     int row = idx / 2;
@@ -255,11 +255,11 @@ public class AiluuScreen extends AbstractContainerScreen<AiluuScreenHandler> {
         this.topPos = (this.height - this.imageHeight) / 2;
     }
 
-    private void selectSkill(AiluuSkill skill) {
+    private void selectSkill(MeouSkill skill) {
         ClientPlayNetworking.send(new SkillSelectPayload(this.menu.getEntityId(), skill.ordinal()));
     }
 
-    private static Component skillName(AiluuSkill skill) {
+    private static Component skillName(MeouSkill skill) {
         return Component.translatable("skill.aibots." + skill.getKey());
     }
 

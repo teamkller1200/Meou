@@ -5,9 +5,9 @@ import java.util.Map;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
-import com.aibots.entity.AiluuEntity;
+import com.aibots.entity.MeouEntity;
 
-public final class AiluuDialogue {
+public final class MeouDialogue {
     private static final Map<String, Integer> LINE_COUNTS = Map.of(
         "skill.heal", 3,
         "skill.cheer", 2,
@@ -18,10 +18,10 @@ public final class AiluuDialogue {
         "teleport", 2
     );
 
-    private AiluuDialogue() {
+    private MeouDialogue() {
     }
 
-    public static void say(AiluuEntity companion, String prefix) {
+    public static void say(MeouEntity companion, String prefix) {
         if (companion.level().isClientSide) {
             return;
         }

@@ -9,9 +9,9 @@ import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-import com.aibots.entity.AiluuEntity;
+import com.aibots.entity.MeouEntity;
 
-public class AiluuScreenHandler extends AbstractContainerMenu {
+public class MeouScreenHandler extends AbstractContainerMenu {
     private static final int PLAYER_INV_X = 7;
     private static final int PLAYER_INV_Y = 101;
     private static final int HOTBAR_Y = 159;
@@ -27,16 +27,16 @@ public class AiluuScreenHandler extends AbstractContainerMenu {
     private final DataSlot selectedSkillDataSlot;
     private boolean skillTab;
 
-    public AiluuScreenHandler(int syncId, Inventory playerInventory) {
-        this(syncId, playerInventory, new SimpleContainer(AiluuEntity.TOTAL_SLOTS));
+    public MeouScreenHandler(int syncId, Inventory playerInventory) {
+        this(syncId, playerInventory, new SimpleContainer(MeouEntity.TOTAL_SLOTS));
     }
 
-    public AiluuScreenHandler(int syncId, Inventory playerInventory, Container inventory) {
+    public MeouScreenHandler(int syncId, Inventory playerInventory, Container inventory) {
         this(syncId, playerInventory, inventory, null);
     }
 
-    public AiluuScreenHandler(int syncId, Inventory playerInventory, Container inventory, AiluuEntity entity) {
-        super(ModMenuTypes.AILUU, syncId);
+    public MeouScreenHandler(int syncId, Inventory playerInventory, Container inventory, MeouEntity entity) {
+        super(ModMenuTypes.MEOU, syncId);
         this.inventory = inventory;
         this.skillTab = false;
 
@@ -66,10 +66,10 @@ public class AiluuScreenHandler extends AbstractContainerMenu {
             this.selectedSkillDataSlot = this.addDataSlot(DataSlot.standalone());
         }
 
-        checkContainerSize(inventory, AiluuEntity.TOTAL_SLOTS);
+        checkContainerSize(inventory, MeouEntity.TOTAL_SLOTS);
         inventory.startOpen(playerInventory.player);
 
-        this.addSlot(new Slot(inventory, AiluuEntity.HAND_SLOT, HAND_SLOT_X, HAND_SLOT_Y) {
+        this.addSlot(new Slot(inventory, MeouEntity.HAND_SLOT, HAND_SLOT_X, HAND_SLOT_Y) {
             @Override
             public int getMaxStackSize() {
                 return 1;
@@ -77,7 +77,7 @@ public class AiluuScreenHandler extends AbstractContainerMenu {
 
             @Override
             public boolean isActive() {
-                return !AiluuScreenHandler.this.skillTab;
+                return !MeouScreenHandler.this.skillTab;
             }
         });
 
@@ -103,7 +103,7 @@ public class AiluuScreenHandler extends AbstractContainerMenu {
         return new Slot(container, index, x, y) {
             @Override
             public boolean isActive() {
-                return !AiluuScreenHandler.this.skillTab;
+                return !MeouScreenHandler.this.skillTab;
             }
         };
     }
@@ -119,11 +119,11 @@ public class AiluuScreenHandler extends AbstractContainerMenu {
         if (slot != null && slot.hasItem()) {
             ItemStack stack = slot.getItem();
             result = stack.copy();
-            if (slotIndex < AiluuEntity.TOTAL_SLOTS) {
-                if (!this.moveItemStackTo(stack, AiluuEntity.TOTAL_SLOTS, this.slots.size(), true)) {
+            if (slotIndex < MeouEntity.TOTAL_SLOTS) {
+                if (!this.moveItemStackTo(stack, MeouEntity.TOTAL_SLOTS, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.moveItemStackTo(stack, 0, AiluuEntity.TOTAL_SLOTS, false)) {
+            } else if (!this.moveItemStackTo(stack, 0, MeouEntity.TOTAL_SLOTS, false)) {
                 return ItemStack.EMPTY;
             }
             if (stack.isEmpty()) {
