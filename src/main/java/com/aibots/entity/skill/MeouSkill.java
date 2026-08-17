@@ -98,23 +98,16 @@ public enum MeouSkill {
     LIGHT("light", 200) {
         @Override
         public boolean canTrigger(MeouEntity companion) {
-            Player owner = companion.getOwner();
-            if (owner == null || owner.getInventory().countItem(Items.TORCH) <= 0) {
-                return false;
-            }
-            return findDarkAirBlock(companion) != null;
+            return findTorchStack(companion) != null && findDarkAirBlock(companion) != null;
         }
 
         @Override
         public void activate(MeouEntity companion) {
-            Player owner = companion.getOwner();
-            if (owner == null) {
-                return;
-            }
             BlockPos target = findDarkAirBlock(companion);
             if (target != null) {
-                companion.level().setBlockAndUpdate(target, Blocks.TORCH.defaultBlockState());
-                consumeTorch(owner);
+                if (consumeTorch(companion)) {
+                    companion.level().setBlockAndUpdate(target, Blocks.TORCH.defaultBlockState());
+                }
             }
         }
     },
@@ -206,20 +199,60 @@ public enum MeouSkill {
             pos.getX() + 3, pos.getY() + 3, pos.getZ() + 3
         )) {
             BlockState state = companion.level().getBlockState(candidate);
-            if (state.isAir() && companion.level().getMaxLocalRawBrightness(candidate) <= 7) {
+            BlockState belowState = companion.level().getBlockState(candidate.below());
+            // 空気ブロックであり、かつ足元（下）が固体ブロック（松明を置ける）であること
+            if (state.isAir() && belowState.isSolid() && companion.level().getMaxLocalRawBrightness(candidate) <= 7) {
                 return candidate.immutable();
             }
         }
         return null;
     }
 
-    private static boolean consumeTorch(Player player) {
-        var inventory = player.getInventory();
-        for (int i = 0; i < inventory.getContainerSize(); i++) {
-            ItemStack stack = inventory.getItem(i);
+    private static ItemStack findTorchStack(MeouEntity companion) {
+        // 1. Meou自身のインベントリから探す
+        var meouInv = companion.getInventory();
+        for (int i = 0; i < meouInv.getContainerSize(); i++) {
+            ItemStack stack = meouInv.getItem(i);
+            if (stack.is(Items.TORCH)) {
+                return stack;
+            }
+        }
+        // 2. オーナーのインベントリからも探す
+        Player owner = companion.getOwner();
+        if (owner != null) {
+            var ownerInv = owner.getInventory();
+            for (int i = 0; i < ownerInv.getContainerSize(); i++) {
+                ItemStack stack = ownerInv.getItem(i);
+                if (stack.is(Items.TORCH)) {
+                    return stack;
+                }
+            }
+        }
+        return null;
+    }
+
+    private static boolean consumeTorch(MeouEntity companion) {
+        // 1. Meou自身のインベントリから消費
+        var meouInv = companion.getInventory();
+        for (int i = 0; i < meouInv.getContainerSize(); i++) {
+            ItemStack stack = meouInv.getItem(i);
             if (stack.is(Items.TORCH)) {
                 stack.shrink(1);
+                meouInv.setChanged();
                 return true;
+            }
+        }
+        // 2. オーナーのインベントリから消費
+        Player owner = companion.getOwner();
+        if (owner != null) {
+            var ownerInv = owner.getInventory();
+            for (int i = 0; i < ownerInv.getContainerSize(); i++) {
+                ItemStack stack = ownerInv.getItem(i);
+                if (stack.is(Items.TORCH)) {
+                    stack.shrink(1);
+                    ownerInv.setChanged();
+                    return true;
+                }
             }
         }
         return false;
