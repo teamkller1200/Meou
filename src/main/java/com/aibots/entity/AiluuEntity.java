@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
 
 import com.aibots.Aibots;
 import com.aibots.entity.ai.FollowCompanionGoal;
+import com.aibots.entity.skill.AiluuSkill;
+import com.aibots.entity.skill.SkillAutoTriggerGoal;
 import com.aibots.screen.AiluuScreenHandler;
 
 public class AiluuEntity extends PathfinderMob {
@@ -40,6 +42,9 @@ public class AiluuEntity extends PathfinderMob {
 
     @Nullable
     private UUID ownerId;
+
+    private AiluuSkill selectedSkill = AiluuSkill.HEAL;
+    private int skillCooldownTicks;
 
     private final SimpleContainer inventory = new SimpleContainer(TOTAL_SLOTS);
 
@@ -59,6 +64,7 @@ public class AiluuEntity extends PathfinderMob {
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(1, new FollowCompanionGoal(this, 2.5D, 32.0D));
+        this.goalSelector.addGoal(2, new SkillAutoTriggerGoal(this));
     }
 
     @Override
@@ -89,6 +95,22 @@ public class AiluuEntity extends PathfinderMob {
 
     public boolean hasOwner() {
         return this.ownerId != null;
+    }
+
+    public AiluuSkill getSelectedSkill() {
+        return this.selectedSkill;
+    }
+
+    public void setSelectedSkill(AiluuSkill skill) {
+        this.selectedSkill = skill;
+    }
+
+    public int getSkillCooldownTicks() {
+        return this.skillCooldownTicks;
+    }
+
+    public void setSkillCooldownTicks(int ticks) {
+        this.skillCooldownTicks = Math.max(0, ticks);
     }
 
     public SimpleContainer getInventory() {
@@ -141,6 +163,8 @@ public class AiluuEntity extends PathfinderMob {
         if (this.ownerId != null) {
             nbt.putUUID("Owner", this.ownerId);
         }
+        nbt.putString("SelectedSkill", this.selectedSkill.getKey());
+        nbt.putInt("SkillCooldown", this.skillCooldownTicks);
         ContainerHelper.saveAllItems(nbt, this.inventory.getItems(), this.registryAccess());
     }
 
@@ -150,6 +174,8 @@ public class AiluuEntity extends PathfinderMob {
         if (nbt.contains("Owner")) {
             this.ownerId = nbt.getUUID("Owner");
         }
+        this.selectedSkill = AiluuSkill.byKey(nbt.getString("SelectedSkill"));
+        this.skillCooldownTicks = nbt.getInt("SkillCooldown");
         ContainerHelper.loadAllItems(nbt, this.inventory.getItems(), this.registryAccess());
     }
 }
