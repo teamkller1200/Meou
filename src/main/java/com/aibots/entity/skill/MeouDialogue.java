@@ -15,7 +15,8 @@ public final class MeouDialogue {
         "skill.alert", 2,
         "skill.light", 2,
         "skill.attack", 3,
-        "teleport", 2
+        "teleport", 2,
+        "death", 4
     );
 
     private MeouDialogue() {
@@ -37,6 +38,26 @@ public final class MeouDialogue {
             return;
         }
         companion.setLastDialogueTick(companion.tickCount);
+        sendLine(companion, prefix, count);
+    }
+
+    public static void sayDeath(MeouEntity companion) {
+        if (companion.level().isClientSide) {
+            return;
+        }
+        Integer count = LINE_COUNTS.get("death");
+        if (count == null || count <= 0) {
+            return;
+        }
+        // 死亡時は単発なのでスパム防止チェックを適用しない
+        sendLine(companion, "death", count);
+    }
+
+    private static void sendLine(MeouEntity companion, String prefix, int count) {
+        Player owner = companion.getOwner();
+        if (owner == null) {
+            return;
+        }
         int line = companion.getRandom().nextInt(count) + 1;
         String key = "dialogue.aibots." + prefix + "." + line;
         String name = companion.getName().getString();

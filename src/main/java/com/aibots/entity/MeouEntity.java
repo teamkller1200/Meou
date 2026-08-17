@@ -12,6 +12,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -32,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import com.aibots.Aibots;
 import com.aibots.entity.ai.FollowCompanionGoal;
+import com.aibots.entity.skill.MeouDialogue;
 import com.aibots.entity.skill.MeouSkill;
 import com.aibots.entity.skill.SkillAutoTriggerGoal;
 import com.aibots.screen.MeouScreenHandler;
@@ -105,6 +107,12 @@ public class MeouEntity extends PathfinderMob {
             }
         }
         this.updateHeldAttackDamage();
+    }
+
+    @Override
+    public void die(DamageSource damageSource) {
+        super.die(damageSource);
+        MeouDialogue.sayDeath(this);
     }
 
     @Override
