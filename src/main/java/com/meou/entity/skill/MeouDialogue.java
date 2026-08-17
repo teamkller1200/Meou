@@ -16,7 +16,8 @@ public final class MeouDialogue {
         "skill.light", 2,
         "skill.attack", 3,
         "teleport", 2,
-        "death", 4
+        "death", 4,
+        "mumble", 5
     );
 
     private MeouDialogue() {
@@ -51,6 +52,23 @@ public final class MeouDialogue {
         }
         // 死亡時は単発なのでスパム防止チェックを適用しない
         sendLine(companion, "death", count);
+    }
+
+    public static void sayMumble(MeouEntity companion) {
+        if (companion.level().isClientSide) {
+            return;
+        }
+        Integer count = LINE_COUNTS.get("mumble");
+        if (count == null || count <= 0) {
+            return;
+        }
+        // 独り言は既存セリフとは独立タイマーで発動するが、
+        // 直前のセリフとの重複表示を避けるため3秒間隔制御は尊重する
+        if (companion.tickCount < companion.getLastDialogueTick() + companion.getDialogueInterval()) {
+            return;
+        }
+        companion.setLastDialogueTick(companion.tickCount);
+        sendLine(companion, "mumble", count);
     }
 
     private static void sendLine(MeouEntity companion, String prefix, int count) {

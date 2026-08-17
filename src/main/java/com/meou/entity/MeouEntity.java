@@ -56,6 +56,7 @@ public class MeouEntity extends PathfinderMob {
     private int skillCooldownTicks;
     private int attackModeTicks;
     private int lastDialogueTick;
+    private int nextMumbleTick;
     private ItemStack lastHeldItem = ItemStack.EMPTY;
 
     private final SimpleContainer inventory = new SimpleContainer(TOTAL_SLOTS);
@@ -107,6 +108,18 @@ public class MeouEntity extends PathfinderMob {
             }
         }
         this.updateHeldAttackDamage();
+        this.tryMumble();
+    }
+
+    private void tryMumble() {
+        if (this.nextMumbleTick == 0) {
+            this.nextMumbleTick = this.tickCount + this.getRandom().nextIntBetweenInclusive(600, 1200);
+        }
+        if (this.tickCount < this.nextMumbleTick) {
+            return;
+        }
+        MeouDialogue.sayMumble(this);
+        this.nextMumbleTick = this.tickCount + this.getRandom().nextIntBetweenInclusive(600, 1200);
     }
 
     @Override
