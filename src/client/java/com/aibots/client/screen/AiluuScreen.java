@@ -16,10 +16,12 @@ import net.minecraft.world.inventory.Slot;
 public class AiluuScreen extends AbstractContainerScreen<AiluuScreenHandler> {
     private static final ResourceLocation TEXTURE =
         ResourceLocation.fromNamespaceAndPath(Aibots.MOD_ID, "textures/gui/container/ailuu.png");
+    private static final ResourceLocation TAB_SELECTED =
+        ResourceLocation.fromNamespaceAndPath(Aibots.MOD_ID, "textures/gui/ailuu_tab_selected.png");
+    private static final ResourceLocation TAB_UNSELECTED =
+        ResourceLocation.fromNamespaceAndPath(Aibots.MOD_ID, "textures/gui/ailuu_tab_unselected.png");
 
     private static final ResourceLocation BUTTON = ResourceLocation.withDefaultNamespace("widget/button");
-    private static final ResourceLocation BUTTON_HIGHLIGHTED =
-        ResourceLocation.withDefaultNamespace("widget/button_highlighted");
     private static final ResourceLocation BUTTON_DISABLED =
         ResourceLocation.withDefaultNamespace("widget/button_disabled");
 
@@ -28,15 +30,29 @@ public class AiluuScreen extends AbstractContainerScreen<AiluuScreenHandler> {
 
     private static final int TAB_INVENTORY = 0;
     private static final int TAB_SKILL = 1;
-    private static final int TAB_WIDTH = 40;
-    private static final int TAB_HEIGHT = 12;
+    private static final int TAB_WIDTH = 54;
+    private static final int TAB_HEIGHT = 32;
+    private static final int TAB_X = 7;
+    private static final int TAB_Y = -28;
+
+    private static final int INVENTORY_WIDTH = 176;
+    private static final int INVENTORY_HEIGHT = 182;
+    private static final int SKILL_WIDTH = 176;
+    private static final int SKILL_HEIGHT = 164;
+
+    private static final int SKILL_BTN_W = 72;
+    private static final int SKILL_BTN_H = 18;
+    private static final int SKILL_COL_PITCH = 79;
+    private static final int SKILL_ROW_PITCH = 22;
+    private static final int SKILL_GRID_X = 12;
+    private static final int SKILL_GRID_Y = 46;
 
     private int currentTab = TAB_INVENTORY;
 
     public AiluuScreen(AiluuScreenHandler handler, Inventory inventory, Component title) {
         super(handler, inventory, title);
-        this.imageWidth = 176;
-        this.imageHeight = 182;
+        this.imageWidth = INVENTORY_WIDTH;
+        this.imageHeight = INVENTORY_HEIGHT;
         this.titleLabelX = 7;
         this.titleLabelY = 5;
         this.inventoryLabelX = 7;
@@ -48,7 +64,11 @@ public class AiluuScreen extends AbstractContainerScreen<AiluuScreenHandler> {
         int x = this.leftPos;
         int y = this.topPos;
 
-        graphics.blit(TEXTURE, x, y, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
+        if (this.currentTab == TAB_SKILL) {
+            graphics.fill(x, y, x + this.imageWidth, y + this.imageHeight, PANEL_COLOR);
+        } else {
+            graphics.blit(TEXTURE, x, y, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
+        }
 
         this.renderTabs(graphics, x, y);
 
@@ -58,29 +78,42 @@ public class AiluuScreen extends AbstractContainerScreen<AiluuScreenHandler> {
     }
 
     private void renderTabs(GuiGraphics graphics, int x, int y) {
-        this.renderTab(graphics, x + 88, y + 2, TAB_INVENTORY,
+        this.renderTab(graphics, x + TAB_X, y + TAB_Y, TAB_INVENTORY,
             Component.translatable("tab.aibots.inventory"));
-        this.renderTab(graphics, x + 130, y + 2, TAB_SKILL,
+        this.renderTab(graphics, x + TAB_X + TAB_WIDTH + 2, y + TAB_Y, TAB_SKILL,
             Component.translatable("tab.aibots.skill"));
     }
 
     private void renderTab(GuiGraphics graphics, int x, int y, int tab, Component label) {
         boolean active = this.currentTab == tab;
-        graphics.blitSprite(active ? BUTTON_HIGHLIGHTED : BUTTON, x, y, TAB_WIDTH, TAB_HEIGHT);
-        this.drawCenteredShadow(graphics, label, x + TAB_WIDTH / 2, y + 2, TEXT_COLOR);
+        ResourceLocation sprite = active ? TAB_SELECTED : TAB_UNSELECTED;
+        graphics.blit(sprite, x, y, 0.0F, 0.0F, TAB_WIDTH, TAB_HEIGHT, TAB_WIDTH, TAB_HEIGHT);
+        this.drawCenteredShadow(graphics, label, x + TAB_WIDTH / 2, y + 10, TEXT_COLOR);
     }
 
     private void renderSkillTab(GuiGraphics graphics, int x, int y) {
-        graphics.fill(x + 7, y + 39, x + 7 + 162, y + 39 + 120, PANEL_COLOR);
         for (AiluuSkill skill : AiluuSkill.values()) {
             int idx = skill.ordinal();
             int col = idx % 2;
             int row = idx / 2;
-            int bx = x + 7 + col * 79;
-            int by = y + 46 + row * 22;
+            int bx = x + SKILL_GRID_X + col * SKILL_COL_PITCH;
+            int by = y + SKILL_GRID_Y + row * SKILL_ROW_PITCH;
             boolean selected = idx == this.menu.getSelectedSkillIndex();
-            graphics.blitSprite(selected ? BUTTON_DISABLED : BUTTON, bx, by, 72, 18);
-            this.drawCenteredShadow(graphics, skillName(skill), bx + 36, by + 5, TEXT_COLOR);
+            graphics.blitSprite(selected ? BUTTON_DISABLED : BUTTON, bx, by, SKILL_BTN_W, SKILL_BTN_H);
+            this.drawCenteredShadow(graphics, skillName(skill), bx + SKILL_BTN_W / 2, by + 5, TEXT_COLOR);
+        }
+        this.renderSkillDescription(graphics, x, y);
+    }
+
+    private void renderSkillDescription(GuiGraphics graphics, int x, int y) {
+        AiluuSkill selected = AiluuSkill.byOrdinal(this.menu.getSelectedSkillIndex());
+        int cx = x + this.imageWidth / 2;
+        int top = y + 112;
+        String desc = Component.translatable(selected.descriptionKey()).getString();
+        int lineY = top;
+        for (String line : desc.split("\n", -1)) {
+            this.drawCenteredShadow(graphics, Component.literal(line), cx, lineY, TEXT_COLOR);
+            lineY += 9;
         }
     }
 
@@ -105,11 +138,11 @@ public class AiluuScreen extends AbstractContainerScreen<AiluuScreenHandler> {
         if (button == 0) {
             int x = this.leftPos;
             int y = this.topPos;
-            if (this.inRect(x + 88, y + 2, TAB_WIDTH, TAB_HEIGHT, mouseX, mouseY)) {
+            if (this.inRect(x + TAB_X, y + TAB_Y, TAB_WIDTH, TAB_HEIGHT, mouseX, mouseY)) {
                 this.setTab(TAB_INVENTORY);
                 return true;
             }
-            if (this.inRect(x + 130, y + 2, TAB_WIDTH, TAB_HEIGHT, mouseX, mouseY)) {
+            if (this.inRect(x + TAB_X + TAB_WIDTH + 2, y + TAB_Y, TAB_WIDTH, TAB_HEIGHT, mouseX, mouseY)) {
                 this.setTab(TAB_SKILL);
                 return true;
             }
@@ -118,9 +151,9 @@ public class AiluuScreen extends AbstractContainerScreen<AiluuScreenHandler> {
                     int idx = skill.ordinal();
                     int col = idx % 2;
                     int row = idx / 2;
-                    int bx = x + 7 + col * 79;
-                    int by = y + 46 + row * 22;
-                    if (this.inRect(bx, by, 72, 18, mouseX, mouseY)) {
+                    int bx = x + SKILL_GRID_X + col * SKILL_COL_PITCH;
+                    int by = y + SKILL_GRID_Y + row * SKILL_ROW_PITCH;
+                    if (this.inRect(bx, by, SKILL_BTN_W, SKILL_BTN_H, mouseX, mouseY)) {
                         if (idx != this.menu.getSelectedSkillIndex()) {
                             this.selectSkill(skill);
                         }
@@ -136,6 +169,19 @@ public class AiluuScreen extends AbstractContainerScreen<AiluuScreenHandler> {
     private void setTab(int tab) {
         this.currentTab = tab;
         this.menu.setSkillTab(tab == TAB_SKILL);
+        this.updateSize();
+    }
+
+    private void updateSize() {
+        if (this.currentTab == TAB_SKILL) {
+            this.imageWidth = SKILL_WIDTH;
+            this.imageHeight = SKILL_HEIGHT;
+        } else {
+            this.imageWidth = INVENTORY_WIDTH;
+            this.imageHeight = INVENTORY_HEIGHT;
+        }
+        this.leftPos = (this.width - this.imageWidth) / 2;
+        this.topPos = (this.height - this.imageHeight) / 2;
     }
 
     private void selectSkill(AiluuSkill skill) {

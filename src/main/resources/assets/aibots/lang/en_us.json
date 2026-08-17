@@ -6,5 +6,10 @@
     "skill.aibots.cheer": "Cheer",
     "skill.aibots.collect": "Collect",
     "skill.aibots.alert": "Alert",
-    "skill.aibots.light": "Light"
+    "skill.aibots.light": "Light",
+    "skill.aibots.heal.desc": "Auto-casts regeneration\nwhen HP is low",
+    "skill.aibots.cheer.desc": "Boosts your speed\nwhen enemies approach",
+    "skill.aibots.collect.desc": "Picks up dropped items\nnearby",
+    "skill.aibots.alert.desc": "Marks nearby hostile mobs\nwith a glow",
+    "skill.aibots.light.desc": "Automatically places torches\nin dark areas"
 }

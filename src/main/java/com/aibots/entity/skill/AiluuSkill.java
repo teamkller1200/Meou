@@ -129,6 +129,10 @@ public enum AiluuSkill {
         return this.cooldownTicks;
     }
 
+    public String descriptionKey() {
+        return "skill.aibots." + this.key + ".desc";
+    }
+
     public abstract boolean canTrigger(AiluuEntity companion);
 
     public abstract void activate(AiluuEntity companion);
