@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Minecraft Fabric モッド `aibots`（コンパニオン "Meou"、MC 1.21.1）。外部 AI / Python ブリッジは一切使わない。仕様は `README.md`（英語）参照。
+Minecraft Fabric モッド `meou`（コンパニオン "Meou"、MC 1.21.1）。外部 AI / Python ブリッジは一切使わない。仕様は `README.md`（英語）参照。
 
 ## ビルド / 実行
 
@@ -15,18 +15,22 @@ Minecraft Fabric モッド `aibots`（コンパニオン "Meou"、MC 1.21.1）�
 ## ソース構成（Loom `splitEnvironmentSourceSets()`）
 
 - `src/main/java` = common/サーバー側。エンティティ、AI Goal、登録、Mixin。
-- `src/client/java` = クライアント限定。モデル、レンダラー、GUI。エントリポイントは `com.aibots.client.AibotsClient`。
-- クライアント限定クラス（`net.minecraft.client.*` や Fabric クライアント API）は `src/main` から参照しない。モデル/レンダラー登録は `AibotsClient.onInitializeClient()` で行う。
-- エントリポイント: `com.aibots.Aibots`（main）。ResourceLocation は `Aibots.id(path)` ヘルパーを使用。
+- `src/client/java` = クライアント限定。モデル、レンダラー、GUI。エントリポイントは `com.meou.client.MeouClient`。
+- クライアント限定クラス（`net.minecraft.client.*` や Fabric クライアント API）は `src/main` から参照しない。モデル/レンダラー登録は `MeouClient.onInitializeClient()` で行う。
+- エントリポイント: `com.meou.Meou`（main）。ResourceLocation は `Meou.id(path)` ヘルパーを使用。
 - エンティティ・属性の登録は `ModEntityTypes`（static field + `registerAll()`）。新規エンティティはここに追加。
+- アイテムの登録は `com.meou.item.ModItems`（static field + `registerAll()`、クリエイティブタブ登録も `Meou.onInitialize()` から）。
 
 ## 実装状況（README の「最終形」とは現状が異なる）
 
-- **実装済み**: `MeouEntity`（`PathfinderMob` 継承、owner UUID を NBT キー `Owner` に保存、`setPersistenceRequired()`、owner 未割当時5秒でデスポーン）、`FollowCompanionGoal`（追従 + 遠距離時テレポート）、アイテム手持ち + 27スロット保管庫（`MeouScreenHandler` / `MeouScreen`、Shift+右クリックで開く）、スキルシステム（`entity/skill/` パッケージ: `MeouSkill` enum **6種**（`HEAL`/`CHEER`/`COLLECT`/`ALERT`/`LIGHT`/`ATTACK`）+ `SkillAutoTriggerGoal`、選択スキルとクールダウンは NBT キー `SelectedSkill` / `SkillCooldown` に永続化、デフォルト `HEAL`）、**タブ式スキル選択 GUI と `CustomPayload` 通信**（`SkillSelectPayload` / `RenamePayload` を `Aibots.onInitialize()` の `registerPayloads()` で C2S 登録、`MeouScreen` から送信、クライアント側は `MenuScreens.register` で `MeouScreen::new`）。
+- **実装済み**: `MeouEntity`（`PathfinderMob` 継承、owner UUID を NBT キー `Owner` に保存、`setPersistenceRequired()`、owner 未割当時5秒でデスポーン）、`FollowCompanionGoal`（追従 + 遠距離時テレポート）、アイテム手持ち + 27スロット保管庫（`MeouScreenHandler` / `MeouScreen`、Shift+右クリックで開く）、スキルシステム（`entity/skill/` パッケージ: `MeouSkill` enum **6種**（`HEAL`/`CHEER`/`COLLECT`/`ALERT`/`LIGHT`/`ATTACK`）+ `SkillAutoTriggerGoal`、選択スキルとクールダウンは NBT キー `SelectedSkill` / `SkillCooldown` に永続化、デフォルト `HEAL`）、**タブ式スキル選択 GUI と `CustomPayload` 通信**（`SkillSelectPayload` / `RenamePayload` を `Meou.onInitialize()` の `registerPayloads()` で C2S 登録、`MeouScreen` から送信、クライアント側は `MenuScreens.register` で `MeouScreen::new`）、**スポーンエッグ**（`ModItems.MEOU_SPAWN_EGG`、`CreativeModeTabs.SPAWN_EGGS` に登録）、**手持ちアイテムのレンダリング**（`MeouModel` が `ArmedModel` 実装 + `MeouRenderer` に `ItemInHandLayer`）、**死亡時セリフ**（`MeouDialogue.sayDeath()`、スパム防止チェックなしで必ず1回発言）。
 - **ATTACK スキルの仕組み（注意）**: `MeouSkill.ATTACK` は `companion.setTarget()` + `MeouEntity.setAttackModeTicks()`（100tick）で戦闘モードに入り、`MeouEntity` 内の専用 `MeleeAttackGoal`（`attackModeTicks` が 0 以外のときのみ `canUse`）で近接攻撃する。手持ちアイテムのダメージを `updateHeldAttackDamage()` で攻撃力に反映。NBT キー `SelectedSkill` は enum 名ではなく `getKey()`（例 `"attack"`）で保存。
-- **未実装**: スポーンエッグ、サウンド、マルチ体管理、手持ちアイテムのレンダリング、カスタム猫型モデル。README のファイル構成・表（Skill 6種）はおおむね目標に近いが、「Out of Scope」フェーズ2機能は未実装。
+- **LIGHT スキルの仕組み（注意）**: 松明は **Meou 自身の保管庫からだけ**消費する（プレイヤーインベントリは見ない）。設置位置は「空気ブロックかつ足元が固体（`belowState.isSolid()`）」かつ暗い場所のみ。
+- **セリフの仕組み**: `MeouDialogue` の `LINE_COUNTS` に翻訳キーごとの行数（`dialogue.meou.<prefix>.<n>`）を定義。`say()` は 60tick（3秒）のスパム防止あり、`sayDeath()` はなし。`death` は日英各4種。
+- **調整済みの数値**: 全スキルのクールダウン短縮（HEAL 40tick / CHEER 60 / COLLECT 30 / ALERT 60 / LIGHT 60 / ATTACK 80）、移動速度 `0.32D`（プレイヤーより少し速い）。
+- **未実装**: サウンド、マルチ体管理、カスタム猫型モデル、独り言（追加予定: 1分に1〜2回、`sayMumble` 予定）。README の「Out of Scope」フェーズ2機能は未実装。
 
 ## Mixin
 
-- `src/main/resources/aibots.mixins.json` / `src/client/resources/aibots.client.mixins.json` はテンプレート由来の `ExampleMixin` / `ExampleClientMixin`（空の `@Inject`）が残っている。
+- `src/main/resources/meou.mixins.json` / `src/client/resources/meou.client.mixins.json` はテンプレート由来の `ExampleMixin` / `ExampleClientMixin`（空の `@Inject`）が残っている。
 - どちらも `defaultRequire: 1`（`required: true`）のため、ターゲットメソッド名が解決できないと**ビルドではなくゲームロード時にクラッシュ**する。新しい Mixin クラスは必ず対応する JSON に追加すること。

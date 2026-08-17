@@ -1,6 +1,6 @@
 ---
 name: mc-source-lookup
-description: "Mojang マッピングの Minecraft ソースコードを参照する。このプロジェクト（aibots, Fabric 1.21.1, Mojang mappings）のビルド環境で、クラスのメソッドシグネチャ（戻り値・引数）を確認したいとき、Mojang 名のメソッドが存在するか調べたいとき、javap でクラスを解析する手順を提供する。使うタイミング: クラス名やメソッド名を指定して「Inventory.add の戻り値は？」「Container に addItem はある？」「LivingEntity のメソッド一覧」といった質問があったとき。"
+description: "Mojang マッピングの Minecraft ソースコードを参照する。このプロジェクト（meou, Fabric 1.21.1, Mojang mappings）のビルド環境で、クラスのメソッドシグネチャ（戻り値・引数）を確認したいとき、Mojang 名のメソッドが存在するか調べたいとき、javap でクラスを解析する手順を提供する。使うタイミング: クラス名やメソッド名を指定して「Inventory.add の戻り値は？」「Container に addItem はある？」「LivingEntity のメソッド一覧」といった質問があったとき。"
 ---
 
 # Minecraft Source Lookup (Mojang Mappings)

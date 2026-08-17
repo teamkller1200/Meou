@@ -167,8 +167,8 @@ The `run/` directory is a gitignored development workspace.
 
 ```
 src/
-├── main/java/com/aibots/
-│   ├── Aibots.java                  # Mod entry point, payload registration
+├── main/java/com/meou/
+│   ├── Meou.java                  # Mod entry point, payload registration
 │   ├── entity/
 │   │   ├── ModEntityTypes.java      # Entity registration
 │   │   ├── MeouEntity.java          # Meou entity
@@ -185,8 +185,8 @@ src/
 │   │   └── RenamePayload.java       # Rename packet
 │   └── mixin/
 │       └── ExampleMixin.java        # Template-derived (unused)
-├── client/java/com/aibots/client/
-│   ├── AibotsClient.java            # Client entry point
+├── client/java/com/meou/client/
+│   ├── MeouClient.java            # Client entry point
 │   ├── screen/
 │   │   └── MeouScreen.java          # Tabbed GUI (items / skill / rename)
 │   ├── model/
@@ -196,7 +196,7 @@ src/
 │   └── mixin/
 │       └── ExampleClientMixin.java  # Template-derived (unused)
 └── main/resources/
-    ├── assets/aibots/
+    ├── assets/meou/
     │   ├── lang/
     │   │   ├── ja_jp.json           # Japanese translations (skill names, descriptions, lines)
     │   │   └── en_us.json           # English translations
@@ -207,6 +207,6 @@ src/
     │           ├── meou_tab_unselected.png
     │           └── container/meou.png
     ├── fabric.mod.json
-    ├── aibots.mixins.json
-    └── aibots.client.mixins.json
+    ├── meou.mixins.json
+    └── meou.client.mixins.json
 ```
