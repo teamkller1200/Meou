@@ -3,10 +3,13 @@ package com.aibots.client.screen;
 import com.aibots.Aibots;
 import com.aibots.entity.skill.AiluuSkill;
 import com.aibots.screen.AiluuScreenHandler;
+import com.aibots.screen.RenamePayload;
 import com.aibots.screen.SkillSelectPayload;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -47,7 +50,19 @@ public class AiluuScreen extends AbstractContainerScreen<AiluuScreenHandler> {
     private static final int SKILL_GRID_X = 12;
     private static final int SKILL_GRID_Y = 46;
 
+    private static final int RENAME_LABEL_Y = 132;
+    private static final int RENAME_EDIT_X = 12;
+    private static final int RENAME_EDIT_Y = 142;
+    private static final int RENAME_EDIT_W = 100;
+    private static final int RENAME_EDIT_H = 18;
+    private static final int RENAME_BTN_X = 118;
+    private static final int RENAME_BTN_Y = 141;
+    private static final int RENAME_BTN_W = 50;
+    private static final int RENAME_BTN_H = 18;
+
     private int currentTab = TAB_INVENTORY;
+    private EditBox nameEditBox;
+    private Button renameButton;
 
     public AiluuScreen(AiluuScreenHandler handler, Inventory inventory, Component title) {
         super(handler, inventory, title);
@@ -57,6 +72,31 @@ public class AiluuScreen extends AbstractContainerScreen<AiluuScreenHandler> {
         this.titleLabelY = 5;
         this.inventoryLabelX = 7;
         this.inventoryLabelY = 95;
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+        this.nameEditBox = new EditBox(this.font, 0, 0, RENAME_EDIT_W, RENAME_EDIT_H, Component.literal(""));
+        this.nameEditBox.setMaxLength(32);
+        this.nameEditBox.setHint(Component.translatable("rename.aibots.hint"));
+        this.addRenderableWidget(this.nameEditBox);
+
+        this.renameButton = Button.builder(
+            Component.translatable("rename.aibots.button"),
+            button -> this.applyRename()
+        ).bounds(0, 0, RENAME_BTN_W, RENAME_BTN_H).build();
+        this.addRenderableWidget(this.renameButton);
+
+        this.layoutRename();
+    }
+
+    private void applyRename() {
+        String name = this.nameEditBox.getValue().trim();
+        if (!name.isEmpty()) {
+            ClientPlayNetworking.send(new RenamePayload(this.menu.getEntityId(), name));
+        }
+        this.nameEditBox.setFocused(false);
     }
 
     @Override
@@ -115,6 +155,8 @@ public class AiluuScreen extends AbstractContainerScreen<AiluuScreenHandler> {
             this.drawCenteredShadow(graphics, Component.literal(line), cx, lineY, TEXT_COLOR);
             lineY += 9;
         }
+        this.drawCenteredShadow(graphics, Component.translatable("rename.aibots.label"),
+            x + RENAME_EDIT_X + RENAME_EDIT_W / 2, y + RENAME_LABEL_Y, TEXT_COLOR);
     }
 
     @Override
@@ -160,16 +202,45 @@ public class AiluuScreen extends AbstractContainerScreen<AiluuScreenHandler> {
                         return true;
                     }
                 }
-                return true;
             }
         }
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (this.nameEditBox != null && this.nameEditBox.isFocused()
+            && this.nameEditBox.keyPressed(keyCode, scanCode, modifiers)) {
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean charTyped(char codePoint, int modifiers) {
+        if (this.nameEditBox != null && this.nameEditBox.isFocused()
+            && this.nameEditBox.charTyped(codePoint, modifiers)) {
+            return true;
+        }
+        return super.charTyped(codePoint, modifiers);
     }
 
     private void setTab(int tab) {
         this.currentTab = tab;
         this.menu.setSkillTab(tab == TAB_SKILL);
         this.updateSize();
+        this.layoutRename();
+    }
+
+    private void layoutRename() {
+        boolean skill = this.currentTab == TAB_SKILL;
+        this.nameEditBox.setPosition(this.leftPos + RENAME_EDIT_X, this.topPos + RENAME_EDIT_Y);
+        this.nameEditBox.setVisible(skill);
+        this.renameButton.setPosition(this.leftPos + RENAME_BTN_X, this.topPos + RENAME_BTN_Y);
+        this.renameButton.visible = skill;
+        if (!skill) {
+            this.nameEditBox.setFocused(false);
+        }
     }
 
     private void updateSize() {

@@ -40,6 +40,7 @@ public class SkillAutoTriggerGoal extends Goal {
         if (skill.canTrigger(this.companion)) {
             skill.activate(this.companion);
             this.companion.setSkillCooldownTicks(skill.getCooldownTicks());
+            AiluuDialogue.say(this.companion, "skill." + skill.getKey());
             LOGGER.debug("[Ailuu {}] skill {} triggered", this.companion.getUUID(), skill.getKey());
         }
     }

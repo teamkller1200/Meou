@@ -21,15 +21,21 @@ public enum AiluuSkill {
         @Override
         public boolean canTrigger(AiluuEntity companion) {
             Player owner = companion.getOwner();
-            return owner != null && owner.getHealth() <= 6.0F;
+            return owner != null
+                && (owner.getHealth() <= 6.0F
+                    || owner.hasEffect(MobEffects.POISON)
+                    || owner.isOnFire());
         }
 
         @Override
         public void activate(AiluuEntity companion) {
             Player owner = companion.getOwner();
-            if (owner != null) {
-                owner.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 60, 1));
+            if (owner == null) {
+                return;
             }
+            owner.removeEffect(MobEffects.POISON);
+            owner.clearFire();
+            owner.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 60, 1));
         }
     },
     CHEER("cheer", 300) {
@@ -84,7 +90,7 @@ public enum AiluuSkill {
 
         @Override
         public void activate(AiluuEntity companion) {
-            for (LivingEntity target : hostileNearby(companion)) {
+            for (LivingEntity target : hostileNearby(companion, 8.0D)) {
                 target.addEffect(new MobEffectInstance(MobEffects.GLOWING, 100, 0));
             }
         }
@@ -109,6 +115,33 @@ public enum AiluuSkill {
             if (target != null) {
                 companion.level().setBlockAndUpdate(target, Blocks.TORCH.defaultBlockState());
                 consumeTorch(owner);
+            }
+        }
+    },
+    ATTACK("attack", 240) {
+        @Override
+        public boolean canTrigger(AiluuEntity companion) {
+            if (companion.getOwner() == null) {
+                return false;
+            }
+            return !hostileNearby(companion, 10.0D).isEmpty();
+        }
+
+        @Override
+        public void activate(AiluuEntity companion) {
+            List<LivingEntity> hostiles = hostileNearby(companion, 10.0D);
+            LivingEntity target = null;
+            double nearestSq = Double.MAX_VALUE;
+            for (LivingEntity hostile : hostiles) {
+                double distSq = companion.distanceToSqr(hostile);
+                if (distSq < nearestSq) {
+                    nearestSq = distSq;
+                    target = hostile;
+                }
+            }
+            if (target != null) {
+                companion.setTarget(target);
+                companion.setAttackModeTicks(100);
             }
         }
     };
@@ -155,13 +188,13 @@ public enum AiluuSkill {
     }
 
     private static boolean hasHostileNearby(AiluuEntity companion) {
-        return !hostileNearby(companion).isEmpty();
+        return !hostileNearby(companion, 8.0D).isEmpty();
     }
 
-    private static List<LivingEntity> hostileNearby(AiluuEntity companion) {
+    private static List<LivingEntity> hostileNearby(AiluuEntity companion, double radius) {
         return companion.level().getEntitiesOfClass(
             LivingEntity.class,
-            companion.getBoundingBox().inflate(8.0D),
+            companion.getBoundingBox().inflate(radius),
             entity -> entity != companion && entity.isAlive() && entity instanceof Enemy
         );
     }

@@ -1,0 +1,45 @@
+package com.aibots.entity.skill;
+
+import java.util.Map;
+
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+
+import com.aibots.entity.AiluuEntity;
+
+public final class AiluuDialogue {
+    private static final Map<String, Integer> LINE_COUNTS = Map.of(
+        "skill.heal", 3,
+        "skill.cheer", 2,
+        "skill.collect", 2,
+        "skill.alert", 2,
+        "skill.light", 2,
+        "skill.attack", 3,
+        "teleport", 2
+    );
+
+    private AiluuDialogue() {
+    }
+
+    public static void say(AiluuEntity companion, String prefix) {
+        if (companion.level().isClientSide) {
+            return;
+        }
+        Player owner = companion.getOwner();
+        if (owner == null) {
+            return;
+        }
+        Integer count = LINE_COUNTS.get(prefix);
+        if (count == null || count <= 0) {
+            return;
+        }
+        if (companion.tickCount < companion.getLastDialogueTick() + companion.getDialogueInterval()) {
+            return;
+        }
+        companion.setLastDialogueTick(companion.tickCount);
+        int line = companion.getRandom().nextInt(count) + 1;
+        String key = "dialogue.aibots." + prefix + "." + line;
+        String name = companion.getName().getString();
+        owner.sendSystemMessage(Component.literal("[" + name + "] ").append(Component.translatable(key)));
+    }
+}

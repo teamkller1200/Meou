@@ -12,6 +12,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
@@ -19,7 +20,9 @@ import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.Vec3;
@@ -49,6 +52,9 @@ public class AiluuEntity extends PathfinderMob {
 
     private AiluuSkill selectedSkill = AiluuSkill.HEAL;
     private int skillCooldownTicks;
+    private int attackModeTicks;
+    private int lastDialogueTick;
+    private ItemStack lastHeldItem = ItemStack.EMPTY;
 
     private final SimpleContainer inventory = new SimpleContainer(TOTAL_SLOTS);
 
@@ -61,14 +67,21 @@ public class AiluuEntity extends PathfinderMob {
         return PathfinderMob.createMobAttributes()
             .add(Attributes.MAX_HEALTH, 20.0D)
             .add(Attributes.MOVEMENT_SPEED, 0.25D)
-            .add(Attributes.FOLLOW_RANGE, 48.0D);
+            .add(Attributes.FOLLOW_RANGE, 48.0D)
+            .add(Attributes.ATTACK_DAMAGE, 1.0D);
     }
 
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
-        this.goalSelector.addGoal(1, new FollowCompanionGoal(this, 2.5D, 32.0D));
-        this.goalSelector.addGoal(2, new SkillAutoTriggerGoal(this));
+        this.goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.2D, false) {
+            @Override
+            public boolean canUse() {
+                return AiluuEntity.this.attackModeTicks > 0 && super.canUse();
+            }
+        });
+        this.goalSelector.addGoal(2, new FollowCompanionGoal(this, 2.5D, 32.0D));
+        this.goalSelector.addGoal(3, new SkillAutoTriggerGoal(this));
     }
 
     @Override
@@ -84,6 +97,13 @@ public class AiluuEntity extends PathfinderMob {
         } else {
             this.unownedTicks = 0;
         }
+        if (this.attackModeTicks > 0) {
+            this.attackModeTicks--;
+            if (this.attackModeTicks == 0) {
+                this.setTarget(null);
+            }
+        }
+        this.updateHeldAttackDamage();
     }
 
     @Override
@@ -130,6 +150,46 @@ public class AiluuEntity extends PathfinderMob {
 
     public void setSkillCooldownTicks(int ticks) {
         this.skillCooldownTicks = Math.max(0, ticks);
+    }
+
+    public void setAttackModeTicks(int ticks) {
+        this.attackModeTicks = Math.max(0, ticks);
+    }
+
+    public int getLastDialogueTick() {
+        return this.lastDialogueTick;
+    }
+
+    public void setLastDialogueTick(int tick) {
+        this.lastDialogueTick = tick;
+    }
+
+    public int getDialogueInterval() {
+        return 60;
+    }
+
+    private void updateHeldAttackDamage() {
+        ItemStack held = this.inventory.getItem(HAND_SLOT);
+        if (ItemStack.isSameItemSameComponents(held, this.lastHeldItem)) {
+            return;
+        }
+        this.lastHeldItem = held.copy();
+        var attribute = this.getAttribute(Attributes.ATTACK_DAMAGE);
+        if (attribute != null) {
+            attribute.setBaseValue(getHeldItemAttackDamage(held));
+        }
+    }
+
+    private static double getHeldItemAttackDamage(ItemStack stack) {
+        double[] damage = {1.0D};
+        if (!stack.isEmpty()) {
+            stack.forEachModifier(EquipmentSlot.MAINHAND, (holder, modifier) -> {
+                if (holder.is(Attributes.ATTACK_DAMAGE)) {
+                    damage[0] = modifier.amount();
+                }
+            });
+        }
+        return damage[0];
     }
 
     public SimpleContainer getInventory() {

@@ -4,6 +4,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import com.aibots.entity.AiluuEntity;
 import com.aibots.entity.ModEntityTypes;
 import com.aibots.entity.skill.AiluuSkill;
 import com.aibots.screen.ModMenuTypes;
+import com.aibots.screen.RenamePayload;
 import com.aibots.screen.SkillSelectPayload;
 
 public class Aibots implements ModInitializer {
@@ -30,6 +32,7 @@ public class Aibots implements ModInitializer {
 
     private static void registerPayloads() {
         PayloadTypeRegistry.playC2S().register(SkillSelectPayload.TYPE, SkillSelectPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(RenamePayload.TYPE, RenamePayload.CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(SkillSelectPayload.TYPE, (payload, context) -> {
             context.player().server.execute(() -> {
@@ -37,6 +40,18 @@ public class Aibots implements ModInitializer {
                     AiluuSkill skill = AiluuSkill.byOrdinal(payload.skillOrdinal());
                     ailuu.setSelectedSkill(skill);
                     LOGGER.debug("[Ailuu {}] skill set to {}", payload.entityId(), skill.getKey());
+                }
+            });
+        });
+
+        ServerPlayNetworking.registerGlobalReceiver(RenamePayload.TYPE, (payload, context) -> {
+            context.player().server.execute(() -> {
+                if (context.player().level().getEntity(payload.entityId()) instanceof AiluuEntity ailuu) {
+                    String name = payload.name().trim();
+                    if (!name.isEmpty()) {
+                        ailuu.setCustomName(Component.literal(name));
+                    }
+                    LOGGER.debug("[Ailuu {}] renamed to {}", payload.entityId(), name);
                 }
             });
         });

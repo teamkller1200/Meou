@@ -76,6 +76,7 @@ public class FollowCompanionGoal extends Goal {
         if (distSqr > this.teleportDistance * this.teleportDistance) {
             this.companion.teleportToOwner(this.owner);
             this.tryTeleportToNear(this.companion, this.owner);
+            com.aibots.entity.skill.AiluuDialogue.say(this.companion, "teleport");
             return;
         }
 
