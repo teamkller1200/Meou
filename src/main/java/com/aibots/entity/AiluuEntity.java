@@ -61,6 +61,7 @@ public class AiluuEntity extends PathfinderMob {
     public AiluuEntity(EntityType<? extends AiluuEntity> entityType, Level level) {
         super(entityType, level);
         this.setPersistenceRequired();
+        this.setCustomNameVisible(true);
     }
 
     public static AttributeSupplier.Builder createMobAttributes() {

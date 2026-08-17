@@ -50,6 +50,7 @@ public class Aibots implements ModInitializer {
                     String name = payload.name().trim();
                     if (!name.isEmpty()) {
                         ailuu.setCustomName(Component.literal(name));
+                        ailuu.setCustomNameVisible(true);
                     }
                     LOGGER.debug("[Ailuu {}] renamed to {}", payload.entityId(), name);
                 }
