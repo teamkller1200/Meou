@@ -40,8 +40,12 @@ public class AiluuEntity extends PathfinderMob {
     public static final int STORAGE_SLOTS = 27;
     public static final int TOTAL_SLOTS = 1 + STORAGE_SLOTS;
 
+    private static final int UNOWNED_DESPAWN_TICKS = 100;
+
     @Nullable
     private UUID ownerId;
+
+    private int unownedTicks;
 
     private AiluuSkill selectedSkill = AiluuSkill.HEAL;
     private int skillCooldownTicks;
@@ -65,6 +69,21 @@ public class AiluuEntity extends PathfinderMob {
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(1, new FollowCompanionGoal(this, 2.5D, 32.0D));
         this.goalSelector.addGoal(2, new SkillAutoTriggerGoal(this));
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (this.level().isClientSide) {
+            return;
+        }
+        if (this.ownerId == null) {
+            if (++this.unownedTicks >= UNOWNED_DESPAWN_TICKS) {
+                this.discard();
+            }
+        } else {
+            this.unownedTicks = 0;
+        }
     }
 
     @Override
