@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import com.aibots.entity.MeouEntity;
 
 public enum MeouSkill {
-    HEAL("heal", 200) {
+    HEAL("heal", 40) {
         @Override
         public boolean canTrigger(MeouEntity companion) {
             Player owner = companion.getOwner();
@@ -38,7 +38,7 @@ public enum MeouSkill {
             owner.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 60, 1));
         }
     },
-    CHEER("cheer", 300) {
+    CHEER("cheer", 60) {
         @Override
         public boolean canTrigger(MeouEntity companion) {
             return hasHostileNearby(companion);
@@ -52,7 +52,7 @@ public enum MeouSkill {
             }
         }
     },
-    COLLECT("collect", 100) {
+    COLLECT("collect", 30) {
         @Override
         public boolean canTrigger(MeouEntity companion) {
             return !companion.level().getEntitiesOfClass(
@@ -82,7 +82,7 @@ public enum MeouSkill {
             }
         }
     },
-    ALERT("alert", 200) {
+    ALERT("alert", 60) {
         @Override
         public boolean canTrigger(MeouEntity companion) {
             return hasHostileNearby(companion);
@@ -95,7 +95,7 @@ public enum MeouSkill {
             }
         }
     },
-    LIGHT("light", 200) {
+    LIGHT("light", 60) {
         @Override
         public boolean canTrigger(MeouEntity companion) {
             return findTorchStack(companion) != null && findDarkAirBlock(companion) != null;
@@ -111,7 +111,7 @@ public enum MeouSkill {
             }
         }
     },
-    ATTACK("attack", 240) {
+    ATTACK("attack", 80) {
         @Override
         public boolean canTrigger(MeouEntity companion) {
             if (companion.getOwner() == null) {
