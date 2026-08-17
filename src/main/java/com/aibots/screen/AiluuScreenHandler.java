@@ -25,6 +25,7 @@ public class AiluuScreenHandler extends AbstractContainerMenu {
     private final Container inventory;
     private final DataSlot entityIdDataSlot;
     private final DataSlot selectedSkillDataSlot;
+    private boolean skillTab;
 
     public AiluuScreenHandler(int syncId, Inventory playerInventory) {
         this(syncId, playerInventory, new SimpleContainer(AiluuEntity.TOTAL_SLOTS));
@@ -37,6 +38,7 @@ public class AiluuScreenHandler extends AbstractContainerMenu {
     public AiluuScreenHandler(int syncId, Inventory playerInventory, Container inventory, AiluuEntity entity) {
         super(ModMenuTypes.AILUU, syncId);
         this.inventory = inventory;
+        this.skillTab = false;
 
         if (entity != null) {
             this.entityIdDataSlot = this.addDataSlot(new DataSlot() {
@@ -72,24 +74,42 @@ public class AiluuScreenHandler extends AbstractContainerMenu {
             public int getMaxStackSize() {
                 return 1;
             }
+
+            @Override
+            public boolean isActive() {
+                return !AiluuScreenHandler.this.skillTab;
+            }
         });
 
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < COLUMNS; col++) {
                 int index = 1 + row * COLUMNS + col;
-                this.addSlot(new Slot(inventory, index, STORAGE_X + col * SLOT_SIZE, STORAGE_Y + row * SLOT_SIZE));
+                this.addSlot(this.newInactiveAwareSlot(inventory, index, STORAGE_X + col * SLOT_SIZE, STORAGE_Y + row * SLOT_SIZE));
             }
         }
 
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
-                this.addSlot(new Slot(playerInventory, 9 + row * 9 + col, PLAYER_INV_X + col * SLOT_SIZE, PLAYER_INV_Y + row * SLOT_SIZE));
+                this.addSlot(this.newInactiveAwareSlot(playerInventory, 9 + row * 9 + col, PLAYER_INV_X + col * SLOT_SIZE, PLAYER_INV_Y + row * SLOT_SIZE));
             }
         }
 
         for (int col = 0; col < 9; col++) {
-            this.addSlot(new Slot(playerInventory, col, PLAYER_INV_X + col * SLOT_SIZE, HOTBAR_Y));
+            this.addSlot(this.newInactiveAwareSlot(playerInventory, col, PLAYER_INV_X + col * SLOT_SIZE, HOTBAR_Y));
         }
+    }
+
+    private Slot newInactiveAwareSlot(Container container, int index, int x, int y) {
+        return new Slot(container, index, x, y) {
+            @Override
+            public boolean isActive() {
+                return !AiluuScreenHandler.this.skillTab;
+            }
+        };
+    }
+
+    public void setSkillTab(boolean skillTab) {
+        this.skillTab = skillTab;
     }
 
     @Override
