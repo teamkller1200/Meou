@@ -67,7 +67,7 @@ public class MeouEntity extends PathfinderMob {
     public static AttributeSupplier.Builder createMobAttributes() {
         return PathfinderMob.createMobAttributes()
             .add(Attributes.MAX_HEALTH, 20.0D)
-            .add(Attributes.MOVEMENT_SPEED, 0.25D)
+            .add(Attributes.MOVEMENT_SPEED, 0.32D)
             .add(Attributes.FOLLOW_RANGE, 48.0D)
             .add(Attributes.ATTACK_DAMAGE, 1.0D);
     }
