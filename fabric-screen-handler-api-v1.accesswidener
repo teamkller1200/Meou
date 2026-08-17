@@ -1,0 +1,8 @@
+accessWidener	v1	intermediary
+accessible	class	net/minecraft/class_3917$class_3918
+accessible	method	net/minecraft/class_3917	<init>	(Lnet/minecraft/class_3917$class_3918;Lnet/minecraft/class_7699;)V
+extendable	method	net/minecraft/class_3917	<init>	(Lnet/minecraft/class_3917$class_3918;Lnet/minecraft/class_7699;)V
+accessible	class	net/minecraft/class_3929$class_3930
+accessible	method	net/minecraft/class_3929	method_17542	(Lnet/minecraft/class_3917;Lnet/minecraft/class_3929$class_3930;)V
+accessible	method	net/minecraft/class_3929	method_17540	(Lnet/minecraft/class_3917;)Lnet/minecraft/class_3929$class_3930;
+accessible	field	net/minecraft/class_747	field_17280	Lnet/minecraft/class_1270;

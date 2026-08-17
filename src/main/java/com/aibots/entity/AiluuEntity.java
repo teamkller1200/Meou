@@ -5,7 +5,13 @@ import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
@@ -23,12 +29,19 @@ import org.slf4j.LoggerFactory;
 
 import com.aibots.Aibots;
 import com.aibots.entity.ai.FollowCompanionGoal;
+import com.aibots.screen.AiluuScreenHandler;
 
 public class AiluuEntity extends PathfinderMob {
     private static final Logger LOGGER = LoggerFactory.getLogger(Aibots.MOD_ID);
 
+    public static final int HAND_SLOT = 0;
+    public static final int STORAGE_SLOTS = 27;
+    public static final int TOTAL_SLOTS = 1 + STORAGE_SLOTS;
+
     @Nullable
     private UUID ownerId;
+
+    private final SimpleContainer inventory = new SimpleContainer(TOTAL_SLOTS);
 
     public AiluuEntity(EntityType<? extends AiluuEntity> entityType, Level level) {
         super(entityType, level);
@@ -78,6 +91,24 @@ public class AiluuEntity extends PathfinderMob {
         return this.ownerId != null;
     }
 
+    public SimpleContainer getInventory() {
+        return this.inventory;
+    }
+
+    @Override
+    public InteractionResult mobInteract(Player player, InteractionHand hand) {
+        if (!this.level().isClientSide) {
+            if (player.isShiftKeyDown() && player == getOwner()) {
+                player.openMenu(new SimpleMenuProvider(
+                    (syncId, inv, p) -> new AiluuScreenHandler(syncId, inv, this.inventory),
+                    Component.translatable("container.aibots.ailuu")
+                ));
+                return InteractionResult.CONSUME;
+            }
+        }
+        return InteractionResult.sidedSuccess(this.level().isClientSide);
+    }
+
     public void teleportToOwner(LivingEntity owner) {
         Vec3 pos = owner.position();
         this.moveTo(
@@ -110,6 +141,7 @@ public class AiluuEntity extends PathfinderMob {
         if (this.ownerId != null) {
             nbt.putUUID("Owner", this.ownerId);
         }
+        ContainerHelper.saveAllItems(nbt, this.inventory.getItems(), this.registryAccess());
     }
 
     @Override
@@ -118,5 +150,6 @@ public class AiluuEntity extends PathfinderMob {
         if (nbt.contains("Owner")) {
             this.ownerId = nbt.getUUID("Owner");
         }
+        ContainerHelper.loadAllItems(nbt, this.inventory.getItems(), this.registryAccess());
     }
 }

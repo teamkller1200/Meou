@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.aibots.entity.ModEntityTypes;
+import com.aibots.screen.ModMenuTypes;
 
 public class Aibots implements ModInitializer {
     public static final String MOD_ID = "aibots";
@@ -18,6 +19,7 @@ public class Aibots implements ModInitializer {
         LOGGER.info("Hello Fabric world!");
 
         ModEntityTypes.registerAll();
+        ModMenuTypes.registerAll();
     }
 
     public static ResourceLocation id(String path) {
