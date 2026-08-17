@@ -18,6 +18,13 @@ This project is a Fabric mod that adds a **Felyne-style companion** to Minecraft
 
 ## 2. MVP Scope
 
+### Premise Features (base behavior, always active)
+
+1. **Player following & teleporting**
+   - Follows behind the player at a distance of 2–3 blocks
+   - Teleports when the player moves too far away to prevent falling behind
+   - Reuses the existing `FollowCompanionGoal` (implemented)
+
 ### Included Features
 
 1. **Item holding & equipment**
@@ -48,7 +55,6 @@ This project is a Fabric mod that adds a **Felyne-style companion** to Minecraft
 
 - Complex automation (e.g. chest sorting)
 - Combat participation (shielding player)
-- Player following & teleporting
 - Sit command
 - Idle animations
 - Sound effects
@@ -179,14 +185,16 @@ src/
 │   │   └── ai/
 │   │       └── FollowCompanionGoal.java
 │   ├── screen/
-│   │   ├── SkillScreenHandler.java  # Server-side container
-│   │   └── SkillPayload.java        # Custom packet
+│   │   ├── AiluuScreenHandler.java  # Inventory GUI (implemented)
+│   │   ├── ModMenuTypes.java        # Menu type registration
+│   │   └── SkillPayload.java        # Custom packet (planned)
 │   └── item/
-│       └── ModItems.java            # Spawn egg
+│       └── ModItems.java            # Spawn egg (planned)
 ├── client/java/com/aibots/client/
 │   ├── AibotsClient.java            # Client entry point
 │   ├── screen/
-│   │   └── SkillScreen.java         # Skill selection GUI
+│   │   ├── AiluuScreen.java         # Inventory GUI (implemented)
+│   │   └── SkillScreen.java         # Skill selection GUI (planned)
 │   ├── model/
 │   │   └── AiluuModel.java          # Custom cat model
 │   └── renderer/
