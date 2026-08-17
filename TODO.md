@@ -15,6 +15,7 @@
 - [x] **スポーンエッグ** ✅ 実装（`ModItems` / `CreativeModeTabs.SPAWN_EGGS` に登録）
 - [x] **手持ちアイテムのレンダリング** ✅ 実装（`ArmedModel` + `ItemInHandLayer`）
 - [x] **死亡時セリフ** ✅ 実装（`MeouDialogue.sayDeath()`、日英各4種）
+- [x] **独り言（つぶやき）機能** ✅ 実装（`MeouDialogue.sayMumble()`、独立タイマーで1分に1〜2回、日英各5種）
 - [x] **スキル調整** ✅ 実装
   - [x] 全スキルのクールダウン短縮（例 HEAL 2秒 / CHEER 3秒 / ATTACK 4秒）
   - [x] LIGHT: Meou の保管庫の松明のみ消費（プレイヤーからは消費しない）
@@ -28,13 +29,6 @@
 
 - [ ] 複数 Meou 管理の動作確認
 - [ ] カスタム猫型モデル & テクスチャ
-
-### 独り言（つぶやき）機能（追加予定）
-
-- [ ] Meou が 1 分に 1〜2 回程度、独り言をチャットに話す
-- [ ] スキル発動・テレポート等の既存セリフ（3秒間隔制御）とは独立したタイマーで管理
-- [ ] 翻訳キー dialogue.meou.mumble.1〜? を en_us / ja_jp に追加
-- [ ] 既存 MeouDialogue を拡張して実装（sayDeath と同様の専用メソッド sayMumble など）
 
 ### 見送り機能（フェーズ2以降）
 
