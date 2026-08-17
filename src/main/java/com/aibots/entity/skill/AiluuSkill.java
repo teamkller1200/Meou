@@ -142,6 +142,14 @@ public enum AiluuSkill {
         return HEAL;
     }
 
+    public static AiluuSkill byOrdinal(int ordinal) {
+        AiluuSkill[] skills = values();
+        if (ordinal < 0 || ordinal >= skills.length) {
+            return HEAL;
+        }
+        return skills[ordinal];
+    }
+
     private static boolean hasHostileNearby(AiluuEntity companion) {
         return !hostileNearby(companion).isEmpty();
     }

@@ -1,14 +1,19 @@
 package com.aibots;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 import net.minecraft.resources.ResourceLocation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.aibots.entity.AiluuEntity;
 import com.aibots.entity.ModEntityTypes;
+import com.aibots.entity.skill.AiluuSkill;
 import com.aibots.screen.ModMenuTypes;
+import com.aibots.screen.SkillSelectPayload;
 
 public class Aibots implements ModInitializer {
     public static final String MOD_ID = "aibots";
@@ -20,6 +25,21 @@ public class Aibots implements ModInitializer {
 
         ModEntityTypes.registerAll();
         ModMenuTypes.registerAll();
+        registerPayloads();
+    }
+
+    private static void registerPayloads() {
+        PayloadTypeRegistry.playC2S().register(SkillSelectPayload.TYPE, SkillSelectPayload.CODEC);
+
+        ServerPlayNetworking.registerGlobalReceiver(SkillSelectPayload.TYPE, (payload, context) -> {
+            context.player().server.execute(() -> {
+                if (context.player().level().getEntity(payload.entityId()) instanceof AiluuEntity ailuu) {
+                    AiluuSkill skill = AiluuSkill.byOrdinal(payload.skillOrdinal());
+                    ailuu.setSelectedSkill(skill);
+                    LOGGER.debug("[Ailuu {}] skill set to {}", payload.entityId(), skill.getKey());
+                }
+            });
+        });
     }
 
     public static ResourceLocation id(String path) {

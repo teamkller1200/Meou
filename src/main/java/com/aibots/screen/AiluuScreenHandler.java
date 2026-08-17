@@ -5,6 +5,7 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
@@ -22,14 +23,46 @@ public class AiluuScreenHandler extends AbstractContainerMenu {
     private static final int COLUMNS = 9;
 
     private final Container inventory;
+    private final DataSlot entityIdDataSlot;
+    private final DataSlot selectedSkillDataSlot;
 
     public AiluuScreenHandler(int syncId, Inventory playerInventory) {
         this(syncId, playerInventory, new SimpleContainer(AiluuEntity.TOTAL_SLOTS));
     }
 
     public AiluuScreenHandler(int syncId, Inventory playerInventory, Container inventory) {
+        this(syncId, playerInventory, inventory, null);
+    }
+
+    public AiluuScreenHandler(int syncId, Inventory playerInventory, Container inventory, AiluuEntity entity) {
         super(ModMenuTypes.AILUU, syncId);
         this.inventory = inventory;
+
+        if (entity != null) {
+            this.entityIdDataSlot = this.addDataSlot(new DataSlot() {
+                @Override
+                public int get() {
+                    return entity.getId();
+                }
+
+                @Override
+                public void set(int value) {
+                }
+            });
+            this.selectedSkillDataSlot = this.addDataSlot(new DataSlot() {
+                @Override
+                public int get() {
+                    return entity.getSelectedSkill().ordinal();
+                }
+
+                @Override
+                public void set(int value) {
+                }
+            });
+        } else {
+            this.entityIdDataSlot = this.addDataSlot(DataSlot.standalone());
+            this.selectedSkillDataSlot = this.addDataSlot(DataSlot.standalone());
+        }
 
         checkContainerSize(inventory, AiluuEntity.TOTAL_SLOTS);
         inventory.startOpen(playerInventory.player);
@@ -89,5 +122,13 @@ public class AiluuScreenHandler extends AbstractContainerMenu {
 
     public Container getInventory() {
         return this.inventory;
+    }
+
+    public int getEntityId() {
+        return this.entityIdDataSlot.get();
+    }
+
+    public int getSelectedSkillIndex() {
+        return this.selectedSkillDataSlot.get();
     }
 }

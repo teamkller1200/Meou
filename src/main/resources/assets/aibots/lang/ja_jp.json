@@ -1,3 +1,10 @@
 {
-    "container.aibots.ailuu": "Ailuu"
+    "container.aibots.ailuu": "Ailuu",
+    "tab.aibots.inventory": "アイテム",
+    "tab.aibots.skill": "スキル",
+    "skill.aibots.heal": "回復",
+    "skill.aibots.cheer": "応援",
+    "skill.aibots.collect": "採集",
+    "skill.aibots.alert": "警報",
+    "skill.aibots.light": "照明"
 }

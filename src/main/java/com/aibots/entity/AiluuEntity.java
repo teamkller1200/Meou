@@ -122,7 +122,7 @@ public class AiluuEntity extends PathfinderMob {
         if (!this.level().isClientSide) {
             if (player.isShiftKeyDown() && player == getOwner()) {
                 player.openMenu(new SimpleMenuProvider(
-                    (syncId, inv, p) -> new AiluuScreenHandler(syncId, inv, this.inventory),
+                    (syncId, inv, p) -> new AiluuScreenHandler(syncId, inv, this.inventory, this),
                     Component.translatable("container.aibots.ailuu")
                 ));
                 return InteractionResult.CONSUME;
