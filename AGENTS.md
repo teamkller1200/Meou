@@ -22,8 +22,9 @@ Minecraft Fabric モッド `aibots`（コンパニオン "Meou"、MC 1.21.1）�
 
 ## 実装状況（README の「最終形」とは現状が異なる）
 
-- **実装済み**: `MeouEntity`（`PathfinderMob` 継承、owner UUID を NBT キー `Owner` に保存、`setPersistenceRequired()`）、`FollowCompanionGoal`（追従 + 遠距離時テレポート）、アイテム手持ち + 27スロット保管庫（`MeouScreenHandler` / `MeouScreen`、Shift+右クリックで開く）、スキルシステム（`entity/skill/` パッケージ: `MeouSkill` enum 5種 + `SkillAutoTriggerGoal`、選択スキルとクールダウンは NBT キー `SelectedSkill` / `SkillCooldown` に永続化、デフォルト `HEAL`）。
-- **未実装**: スキル選択 GUI / `CustomPayload` 通信（スキル選択の仕組み自体は NBT 保存のみ）、スポーンエッグ、サウンド、マルチ体管理、手持ちアイテムのレンダリング。README のファイル構成は目標であり、現在のソースツリーを表していない。
+- **実装済み**: `MeouEntity`（`PathfinderMob` 継承、owner UUID を NBT キー `Owner` に保存、`setPersistenceRequired()`、owner 未割当時5秒でデスポーン）、`FollowCompanionGoal`（追従 + 遠距離時テレポート）、アイテム手持ち + 27スロット保管庫（`MeouScreenHandler` / `MeouScreen`、Shift+右クリックで開く）、スキルシステム（`entity/skill/` パッケージ: `MeouSkill` enum **6種**（`HEAL`/`CHEER`/`COLLECT`/`ALERT`/`LIGHT`/`ATTACK`）+ `SkillAutoTriggerGoal`、選択スキルとクールダウンは NBT キー `SelectedSkill` / `SkillCooldown` に永続化、デフォルト `HEAL`）、**タブ式スキル選択 GUI と `CustomPayload` 通信**（`SkillSelectPayload` / `RenamePayload` を `Aibots.onInitialize()` の `registerPayloads()` で C2S 登録、`MeouScreen` から送信、クライアント側は `MenuScreens.register` で `MeouScreen::new`）。
+- **ATTACK スキルの仕組み（注意）**: `MeouSkill.ATTACK` は `companion.setTarget()` + `MeouEntity.setAttackModeTicks()`（100tick）で戦闘モードに入り、`MeouEntity` 内の専用 `MeleeAttackGoal`（`attackModeTicks` が 0 以外のときのみ `canUse`）で近接攻撃する。手持ちアイテムのダメージを `updateHeldAttackDamage()` で攻撃力に反映。NBT キー `SelectedSkill` は enum 名ではなく `getKey()`（例 `"attack"`）で保存。
+- **未実装**: スポーンエッグ、サウンド、マルチ体管理、手持ちアイテムのレンダリング、カスタム猫型モデル。README のファイル構成・表（Skill 6種）はおおむね目標に近いが、「Out of Scope」フェーズ2機能は未実装。
 
 ## Mixin
 

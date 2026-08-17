@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.aibots.entity.MeouEntity;
 import com.aibots.entity.ModEntityTypes;
 import com.aibots.entity.skill.MeouSkill;
+import com.aibots.item.ModItems;
 import com.aibots.screen.ModMenuTypes;
 import com.aibots.screen.RenamePayload;
 import com.aibots.screen.SkillSelectPayload;
@@ -26,6 +27,7 @@ public class Aibots implements ModInitializer {
         LOGGER.info("Hello Fabric world!");
 
         ModEntityTypes.registerAll();
+        ModItems.registerAll();
         ModMenuTypes.registerAll();
         registerPayloads();
     }
