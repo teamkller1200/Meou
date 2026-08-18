@@ -11,6 +11,11 @@ import net.minecraft.world.item.ItemStack;
 
 import com.meou.entity.MeouEntity;
 
+/**
+ * Container used by the Meou GUI.
+ * It exposes the companion inventory and maintains the active tab state so the
+ * inventory can be hidden while the skill panel is shown.
+ */
 public class MeouScreenHandler extends AbstractContainerMenu {
     private static final int PLAYER_INV_X = 7;
     private static final int PLAYER_INV_Y = 101;

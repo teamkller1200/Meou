@@ -10,6 +10,10 @@ import org.slf4j.LoggerFactory;
 import com.meou.Meou;
 import com.meou.entity.MeouEntity;
 
+/**
+ * Monitors the owner's state and triggers the currently selected skill when its
+ * conditions are met.
+ */
 public class SkillAutoTriggerGoal extends Goal {
     private static final Logger LOGGER = LoggerFactory.getLogger(Meou.MOD_ID);
 

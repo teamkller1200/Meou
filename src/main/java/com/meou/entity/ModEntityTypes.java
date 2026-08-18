@@ -9,6 +9,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 
+/**
+ * Registry for all Meou entity definitions.
+ */
 public final class ModEntityTypes {
     private ModEntityTypes() {
     }

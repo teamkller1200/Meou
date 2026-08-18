@@ -16,6 +16,11 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import com.meou.entity.MeouEntity;
 
+/**
+ * Skill set used by Meou.
+ * Each skill defines its trigger condition and its effect, and the selected
+ * skill is persisted to NBT so it survives reconnects and reloads.
+ */
 public enum MeouSkill {
     HEAL("heal", 40) {
         @Override

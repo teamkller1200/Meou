@@ -7,6 +7,9 @@ import net.minecraft.world.inventory.MenuType;
 
 import com.meou.Meou;
 
+/**
+ * Server-side menu registration for the Meou inventory/skill UI.
+ */
 public final class ModMenuTypes {
     private ModMenuTypes() {
     }

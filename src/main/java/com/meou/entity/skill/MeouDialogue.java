@@ -7,6 +7,10 @@ import net.minecraft.world.entity.player.Player;
 
 import com.meou.entity.MeouEntity;
 
+/**
+ * Utilities for chat dialogue emitted by the companion.
+ * Prefixes are translated using the language key system and throttled to prevent spam.
+ */
 public final class MeouDialogue {
     private static final Map<String, Integer> LINE_COUNTS = Map.of(
         "skill.heal", 3,
@@ -23,6 +27,9 @@ public final class MeouDialogue {
     private MeouDialogue() {
     }
 
+    /**
+     * Emits a skill-related or teleport dialogue if the cooldown has expired.
+     */
     public static void say(MeouEntity companion, String prefix) {
         if (companion.level().isClientSide) {
             return;
