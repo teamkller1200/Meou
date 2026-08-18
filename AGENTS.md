@@ -29,6 +29,7 @@ Minecraft Fabric モッド `meou`（コンパニオン "Meou"、MC 1.21.1）。�
 - **セリフの仕組み**: `MeouDialogue` の `LINE_COUNTS` に翻訳キーごとの行数（`dialogue.meou.<prefix>.<n>`）を定義。`say()` は 60tick（3秒）のスパム防止あり、`sayDeath()` はなし。`death` は日英各4種。
 - **調整済みの数値**: 全スキルのクールダウン短縮（HEAL 40tick / CHEER 60 / COLLECT 30 / ALERT 60 / LIGHT 60 / ATTACK 80）、移動速度 `0.32D`（プレイヤーより少し速い）。
 - **複数体管理**: 同一プレイヤーが複数体所持可。`FollowCompanionGoal` が各 Meou の UUID から決定的に導出した擬似ランダム角度で、オーナー周囲半径5.0ブロックのリング状配置（目標地点）へ追従・テレポート。`FORMATION_RADIUS` と `deriveFormationAngle()` 参照。
+- **鳴き声**: ランダム間隔（600〜1200tick = 1分に1〜2回）でバニラの猫サウンド（`CAT_AMBIENT`/`CAT_PURR`/`CAT_PURREOW`）をランダム再生。ピッチは0.8〜1.2にランダム化。チャットセリフとは独立（別系統）。`ModSounds.MEOU_MEOWS` と `MeouEntity.tryMeow()` 参照。
 - **未実装**: サウンド、カスタム猫型モデル、独り言（追加予定: 1分に1〜2回、`sayMumble` 予定）。README の「Out of Scope」フェーズ3機能は未実装。
 
 ## Mixin

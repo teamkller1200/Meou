@@ -65,6 +65,8 @@ No external AI (LLM) of any kind is used. All behavior is implemented with vanil
 4. **Dialogue system**
    - Random lines are sent to the owner's chat on skill activation and teleport
    - Spam prevention (min. 3s interval), prefixed with `[name]`
+   - Idle "mumble" lines and random cat meow sounds (vanilla `CAT_*` events, random pitch)
+     play independently of chat
 
 5. **Tabbed GUI (vanilla-style)**
    - "Items" and "Skill" tabs at the top (creative-tab style design)
@@ -76,12 +78,14 @@ No external AI (LLM) of any kind is used. All behavior is implemented with vanil
 - **Multiple companions**: A player can own multiple Meou. Each follows to its own
   formation slot — a 5-block radius ring around the owner, with a pseudo-random angle
   derived deterministically from the entity UUID (so mobs spread out instead of stacking).
+- **Random meow sounds**: Meou plays vanilla cat sounds (`CAT_AMBIENT` / `CAT_PURR` /
+  `CAT_PURREOW`) at random intervals (every 30–60s) with a randomized pitch, independent
+  of the chat dialogue.
 
 ### Out of Scope (Phase 3+)
 
 - Sit command
 - Idle animations (head tilt, yawn)
-- Sound effects
 - Particle effects
 - Spawn egg
 - Custom model & texture (cat-shaped)
