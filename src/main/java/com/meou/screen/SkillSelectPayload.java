@@ -5,20 +5,17 @@ import com.meou.Meou;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 
 /**
  * Payload for switching the selected skill on a Meou instance.
  */
 public record SkillSelectPayload(int entityId, int skillOrdinal) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<SkillSelectPayload> TYPE =
-        new CustomPacketPayload.Type<>(Meou.id("skill_select"));
+    public static final CustomPacketPayload.Type<SkillSelectPayload> TYPE = new CustomPacketPayload.Type<>(
+            Meou.id("skill_select"));
 
-    public static final StreamCodec<FriendlyByteBuf, SkillSelectPayload> CODEC =
-        StreamCodec.ofMember(
+    public static final StreamCodec<FriendlyByteBuf, SkillSelectPayload> CODEC = StreamCodec.ofMember(
             SkillSelectPayload::write,
-            SkillSelectPayload::new
-        );
+            SkillSelectPayload::new);
 
     private SkillSelectPayload(FriendlyByteBuf buf) {
         this(buf.readInt(), buf.readInt());
