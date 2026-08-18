@@ -1,6 +1,41 @@
-# AGENTS.md
+# Minecraft Companion Meou — Fabric Mod (MC 1.21.1)
 
-Minecraft Fabric モッド `meou`（コンパニオン "Meou"、MC 1.21.1）。外部 AI / Python ブリッジは一切使わない。仕様は `README.md`（英語）参照。
+コンパニオン猫 "Meou" を追加するマインクラフト Fabric モッド。外部 AI / Python ブリッジは一切使わない。
+スペック・機能は [README.md](README.md) を参照。
+
+---
+
+## 目次
+1. [クイックスタート](#クイックスタート)
+2. [ビルド / 実行](#ビルド--実行)
+3. [ソース構成](#ソース構成)
+4. [キーコンセプト](#キーコンセプト)
+5. [実装状況](#実装状況)
+6. [Mixin 注意](#mixin-注意)
+7. [トラブルシューティング](#トラブルシューティング)
+
+---
+
+## クイックスタート
+
+**初回セットアップ（必須）**
+```powershell
+# PowerShell で実行（cmd.exe は不可）
+$env:JAVA_HOME = "C:\Program Files\Java\jdk-21.0.2"  # JDK 21 を明示的に設定
+.\gradlew.bat runClient  # ゲーム起動；初回は時間がかかる
+```
+
+**よく使うコマンド**
+| タスク | コマンド | 説明 |
+|--------|---------|------|
+| ビルド | `.\gradlew.bat build` | JAR を生成（`build/libs/` に出力） |
+| ゲーム実行 | `.\gradlew.bat runClient` | 開発用クライアントを起動 |
+| サーバー起動 | `.\gradlew.bat runServer` | 開発用サーバーを起動 |
+| ソース生成 | `.\gradlew.bat genSources` | Minecraft ソースを逆コンパイル（必要な場合） |
+
+**重要**: クラス名・メソッド名は **Mojang 公式マッピング** を使用。Yarn ではない。
+
+---
 
 ## ビルド / 実行
 
@@ -21,6 +56,42 @@ Minecraft Fabric モッド `meou`（コンパニオン "Meou"、MC 1.21.1）。�
 - エンティティ・属性の登録は `ModEntityTypes`（static field + `registerAll()`）。新規エンティティはここに追加。
 - アイテムの登録は `com.meou.item.ModItems`（static field + `registerAll()`、クリエイティブタブ登録も `Meou.onInitialize()` から）。
 
+## キーコンセプト
+
+### NBT 永続化パターン
+`MeouEntity` で使用する NBT キー：
+| キー | 型 | 用途 |
+|------|-----|------|
+| `"Owner"` | UUID | オーナープレイヤーの UUID |
+| `"SelectedSkill"` | String | 選択スキル（enum の `.getKey()` 値、例 `"attack"`） |
+| `"SkillCooldown"` | Int | 残りクールダウン (tick) |
+| inventory items | List | 手持ち + 保管庫（`ContainerHelper` で管理） |
+
+**重要**: `SelectedSkill` は enum 名ではなく `getKey()` で保存。NBT ロード時は `MeouSkill.byKey()` で復元。
+
+### ネットワーク通信（C2S Payload）
+スキル変更・名前変更はカスタムペイロードで実装。すべて `Meou.registerPayloads()` で登録：
+- `SkillSelectPayload(entityId, skillOrdinal)` — スキル変更
+- `RenamePayload(entityId, newName)` — 名前変更
+
+クライアント側は `MenuScreens.register()` で `MeouScreen` を登録し、ボタン・入力フィールドから `ClientPlayNetworking.send()` で送信。
+
+### リソースロケーション（ID）
+すべて `Meou.id(path)` ヘルパーを使用：
+```java
+Meou.id("meou_spawn_egg")  // → ResourceLocation("meou", "meou_spawn_egg")
+```
+
+### 翻訳キー規約
+```
+dialogue.meou.<prefix>.<n>        (チャット会話。prefix: heal, cheer, death など)
+skill.meou.<key>.desc             (スキル説明。key: heal, cheer, collect など)
+container.meou.meou               (画面タイトル)
+tab.meou.inventory / tab.meou.skill
+```
+
+---
+
 ## 実装状況（README の「最終形」とは現状が異なる）
 
 - **実装済み**: `MeouEntity`（`PathfinderMob` 継承、owner UUID を NBT キー `Owner` に保存、`setPersistenceRequired()`、owner 未割当時5秒でデスポーン）、`FollowCompanionGoal`（追従 + 遠距離時テレポート）、アイテム手持ち + 27スロット保管庫（`MeouScreenHandler` / `MeouScreen`、Shift+右クリックで開く）、スキルシステム（`entity/skill/` パッケージ: `MeouSkill` enum **6種**（`HEAL`/`CHEER`/`COLLECT`/`ALERT`/`LIGHT`/`ATTACK`）+ `SkillAutoTriggerGoal`、選択スキルとクールダウンは NBT キー `SelectedSkill` / `SkillCooldown` に永続化、デフォルト `HEAL`）、**タブ式スキル選択 GUI と `CustomPayload` 通信**（`SkillSelectPayload` / `RenamePayload` を `Meou.onInitialize()` の `registerPayloads()` で C2S 登録、`MeouScreen` から送信、クライアント側は `MenuScreens.register` で `MeouScreen::new`）、**スポーンエッグ**（`ModItems.MEOU_SPAWN_EGG`、`CreativeModeTabs.SPAWN_EGGS` に登録）、**手持ちアイテムのレンダリング**（`MeouModel` が `ArmedModel` 実装 + `MeouRenderer` に `ItemInHandLayer`）、**死亡時セリフ**（`MeouDialogue.sayDeath()`、スパム防止チェックなしで必ず1回発言）。
@@ -36,3 +107,46 @@ Minecraft Fabric モッド `meou`（コンパニオン "Meou"、MC 1.21.1）。�
 
 - `src/main/resources/meou.mixins.json` / `src/client/resources/meou.client.mixins.json` はテンプレート由来の `ExampleMixin` / `ExampleClientMixin`（空の `@Inject`）が残っている。
 - どちらも `defaultRequire: 1`（`required: true`）のため、ターゲットメソッド名が解決できないと**ビルドではなくゲームロード時にクラッシュ**する。新しい Mixin クラスは必ず対応する JSON に追加すること。
+
+## トラブルシューティング
+
+### ビルド・実行時のエラー
+
+| エラー | 原因 | 解決策 |
+|--------|------|--------|
+| `No matching variant of com.java_lang:java:21` | JDK バージョンが不適切 | `$env:JAVA_HOME = "C:\Program Files\Java\jdk-21.0.2"` を設定し、PowerShell で実行 |
+| `./gradlew が見つからない` / 実行不可 | cmd.exe で実行した | **必ず PowerShell を使用**。`.\gradlew.bat` は PowerShell でのみ実行可 |
+| ゲーム起動時にクラッシュ `Mixin application failed` | Mixin JSON に無効なターゲットメソッドがある | `meou.mixins.json` / `meou.client.mixins.json` の `@Inject` ターゲットを確認；`required: true` の場合は必ずメソッドが存在する必要がある |
+| メソッド名が不明 | Mojang マッピングのソースがない | `.\gradlew.bat genSources` で Minecraft ソースを生成し、IDE で検索 |
+| `UnsupportedClassVersionError` | Java バージョンが古い | `java -version` で確認；JDK 21 が必須 |
+
+### 開発時によくある問題
+
+**スキルが動作しない**
+- `MeouSkill.canTrigger()` の条件を確認。デバッグ用に `System.out.println()` で条件をログ出力
+- NBT 永続化時に `selectedSkill = MeouSkill.byKey(nbt.getString("SelectedSkill"))` を使用しているか確認（ordinal ではなく `getKey()` を使う）
+- `SkillAutoTriggerGoal` が `goalSelector` に追加されているか確認（[MeouEntity](src/main/java/com/meou/entity/MeouEntity.java) 内）
+
+**GUI が表示されない**
+- `MenuScreens.register()` が `MeouClient.onInitializeClient()` で呼び出されているか確認
+- `MeouScreen` の `DataSlot` 同期が機能しているか確認（`MeouScreenHandler` の `addDataSlots()` を参照）
+
+**エンティティがデスポーンする**
+- owner UUID が設定されているか確認（NBT キー `"Owner"`）
+- 未割当時は 5 秒でデスポーン。`MeouEntity.unownedTicks` の値を確認
+
+**複数体の Meou が重なる**
+- `FollowCompanionGoal` の `FORMATION_RADIUS = 5.0` を調整可能
+- 各 Meou の UUID から決定的に導出された角度が異なるはず。`deriveFormationAngle()` を確認
+
+### よくある実装ミス
+
+- ❌ `SelectedSkill` を `nbt.putString("SelectedSkill", selectedSkill.ordinal())` で保存
+  - ✅ `nbt.putString("SelectedSkill", selectedSkill.getKey())` を使用
+- ❌ `src/main` から `net.minecraft.client.*` をインポート
+  - ✅ クライアント限定コードは `src/client` に配置；`src/main` から参照しない
+- ❌ ResourceLocation を直接文字列で作成
+  - ✅ 常に `Meou.id(path)` を使用
+- ❌ Mixin 登録後に `@Inject` ターゲットメソッドが存在しないまま起動
+  - ✅ 不要な Mixin は JSON からコメントアウトするか、テンプレートから削除
+
