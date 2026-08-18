@@ -3,6 +3,7 @@ package com.meou.entity.skill;
 import java.util.List;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -202,7 +203,9 @@ public enum MeouSkill {
             BlockState state = companion.level().getBlockState(candidate);
             BlockState belowState = companion.level().getBlockState(candidate.below());
             // 空気ブロックであり、かつ足元（下）が固体ブロック（松明を置ける）であること
-            if (state.isAir() && belowState.isSolid() && companion.level().getMaxLocalRawBrightness(candidate) <= 7) {
+            if (state.isAir()
+                    && belowState.isFaceSturdy(companion.level(), candidate.below(), Direction.UP)
+                    && companion.level().getMaxLocalRawBrightness(candidate) <= 7) {
                 return candidate.immutable();
             }
         }

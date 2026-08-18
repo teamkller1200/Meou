@@ -254,7 +254,7 @@ public class MeouEntity extends PathfinderMob {
         double[] damage = { 1.0D };
         if (!stack.isEmpty()) {
             stack.forEachModifier(EquipmentSlot.MAINHAND, (holder, modifier) -> {
-                if (holder.is(Attributes.ATTACK_DAMAGE)) {
+                if (holder == Attributes.ATTACK_DAMAGE) {
                     damage[0] = modifier.amount();
                 }
             });

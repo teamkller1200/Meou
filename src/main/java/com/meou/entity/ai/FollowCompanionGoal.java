@@ -29,7 +29,6 @@ public class FollowCompanionGoal extends Goal {
     private static final double FULL_CIRCLE = 2.0D * Math.PI;
 
     private final MeouEntity companion;
-    private final double followDistance;
     private final double teleportDistance;
     private final double formationAngle;
     @Nullable
@@ -39,7 +38,6 @@ public class FollowCompanionGoal extends Goal {
 
     public FollowCompanionGoal(MeouEntity companion, double followDistance, double teleportDistance) {
         this.companion = companion;
-        this.followDistance = followDistance;
         this.teleportDistance = teleportDistance;
         this.formationAngle = deriveFormationAngle(companion);
         this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
