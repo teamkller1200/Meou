@@ -48,3 +48,6 @@ replay_*.log
 # personal notes
 TODO.md
 
+
+# aion tool cache
+.aionrs/
