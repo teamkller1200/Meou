@@ -230,7 +230,7 @@ public class MeouEntity extends PathfinderMob {
     }
 
     public int getDialogueInterval() {
-        return 60;
+        return 200;
     }
 
     private void updateHeldAttackDamage() {

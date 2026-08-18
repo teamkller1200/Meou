@@ -69,8 +69,9 @@ public final class MeouDialogue {
         if (count == null || count <= 0) {
             return;
         }
-        // 独り言は既存セリフとは独立タイマーで発動するが、
-        // 直前のセリフとの重複表示を避けるため3秒間隔制御は尊重する
+
+        // Mumbles are triggered by an independent timer, but to avoid displaying duplicate lines immediately after the previous dialogue,
+        // the interval control is respected
         if (companion.tickCount < companion.getLastDialogueTick() + companion.getDialogueInterval()) {
             return;
         }
