@@ -19,7 +19,8 @@ import com.meou.entity.MeouEntity;
 
 /**
  * Keeps the companion in a stable formation orbit around the owner.
- * The angle is derived from the companion UUID so multiple companions do not stack on top of each other.
+ * The angle is derived from the companion UUID so multiple companions do not
+ * stack on top of each other.
  */
 public class FollowCompanionGoal extends Goal {
     private static final Logger LOGGER = LoggerFactory.getLogger(Meou.MOD_ID);
@@ -62,10 +63,9 @@ public class FollowCompanionGoal extends Goal {
         }
         Vec3 pos = this.owner.position();
         return pos.add(
-            Math.cos(this.formationAngle) * FORMATION_RADIUS,
-            0.0D,
-            Math.sin(this.formationAngle) * FORMATION_RADIUS
-        );
+                Math.cos(this.formationAngle) * FORMATION_RADIUS,
+                0.0D,
+                Math.sin(this.formationAngle) * FORMATION_RADIUS);
     }
 
     @Override

@@ -27,9 +27,9 @@ public enum MeouSkill {
         public boolean canTrigger(MeouEntity companion) {
             Player owner = companion.getOwner();
             return owner != null
-                && (owner.getHealth() <= 6.0F
-                    || owner.hasEffect(MobEffects.POISON)
-                    || owner.isOnFire());
+                    && (owner.getHealth() <= 6.0F
+                            || owner.hasEffect(MobEffects.POISON)
+                            || owner.isOnFire());
         }
 
         @Override
@@ -61,10 +61,9 @@ public enum MeouSkill {
         @Override
         public boolean canTrigger(MeouEntity companion) {
             return !companion.level().getEntitiesOfClass(
-                ItemEntity.class,
-                companion.getBoundingBox().inflate(8.0D),
-                item -> item.isAlive()
-            ).isEmpty();
+                    ItemEntity.class,
+                    companion.getBoundingBox().inflate(8.0D),
+                    item -> item.isAlive()).isEmpty();
         }
 
         @Override
@@ -74,10 +73,9 @@ public enum MeouSkill {
                 return;
             }
             for (ItemEntity item : companion.level().getEntitiesOfClass(
-                ItemEntity.class,
-                companion.getBoundingBox().inflate(8.0D),
-                entity -> entity.isAlive()
-            )) {
+                    ItemEntity.class,
+                    companion.getBoundingBox().inflate(8.0D),
+                    entity -> entity.isAlive())) {
                 ItemStack stack = item.getItem().copy();
                 owner.getInventory().add(stack);
                 item.setItem(stack);
@@ -191,18 +189,16 @@ public enum MeouSkill {
 
     private static List<LivingEntity> hostileNearby(MeouEntity companion, double radius) {
         return companion.level().getEntitiesOfClass(
-            LivingEntity.class,
-            companion.getBoundingBox().inflate(radius),
-            entity -> entity != companion && entity.isAlive() && entity instanceof Enemy
-        );
+                LivingEntity.class,
+                companion.getBoundingBox().inflate(radius),
+                entity -> entity != companion && entity.isAlive() && entity instanceof Enemy);
     }
 
     private static BlockPos findDarkAirBlock(MeouEntity companion) {
         BlockPos pos = companion.blockPosition();
         for (BlockPos candidate : BlockPos.betweenClosed(
-            pos.getX() - 3, pos.getY() - 2, pos.getZ() - 3,
-            pos.getX() + 3, pos.getY() + 3, pos.getZ() + 3
-        )) {
+                pos.getX() - 3, pos.getY() - 2, pos.getZ() - 3,
+                pos.getX() + 3, pos.getY() + 3, pos.getZ() + 3)) {
             BlockState state = companion.level().getBlockState(candidate);
             BlockState belowState = companion.level().getBlockState(candidate.below());
             // 空気ブロックであり、かつ足元（下）が固体ブロック（松明を置ける）であること
