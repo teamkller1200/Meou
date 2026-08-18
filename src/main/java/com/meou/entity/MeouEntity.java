@@ -40,6 +40,11 @@ import com.meou.entity.skill.ModSounds;
 import com.meou.entity.skill.SkillAutoTriggerGoal;
 import com.meou.screen.MeouScreenHandler;
 
+/**
+ * Companion entity logic.
+ * This mob owns the follow AI, skill state, NBT persistence, and the container
+ * used by the player-facing GUI.
+ */
 public class MeouEntity extends PathfinderMob {
     private static final Logger LOGGER = LoggerFactory.getLogger(Meou.MOD_ID);
 
@@ -93,6 +98,11 @@ public class MeouEntity extends PathfinderMob {
         this.goalSelector.addGoal(3, new SkillAutoTriggerGoal(this));
     }
 
+    /**
+     * Server-side update loop.
+     * Unowned mobs despawn after a short timeout and attack/follow-related timers are
+     * updated here so each companion behaves as a lightweight autonomous NPC.
+     */
     @Override
     public void tick() {
         super.tick();
@@ -117,6 +127,10 @@ public class MeouEntity extends PathfinderMob {
         this.tryMeow();
     }
 
+    /**
+     * Random cat-like ambient sound. The interval is randomized independently of
+     * chat dialogue to keep the companion feeling alive without becoming noisy.
+     */
     private void tryMeow() {
         if (this.nextMeowTick == 0) {
             this.nextMeowTick = this.tickCount + this.getRandom().nextIntBetweenInclusive(MEOW_INTERVAL_MIN, MEOW_INTERVAL_MAX);
@@ -132,6 +146,10 @@ public class MeouEntity extends PathfinderMob {
         this.nextMeowTick = this.tickCount + this.getRandom().nextIntBetweenInclusive(MEOW_INTERVAL_MIN, MEOW_INTERVAL_MAX);
     }
 
+    /**
+     * Background idle chatter. It is intentionally separate from skill-triggered
+     * dialogue so the companion can speak at a natural rhythm while the player is idle.
+     */
     private void tryMumble() {
         if (this.nextMumbleTick == 0) {
             this.nextMumbleTick = this.tickCount + this.getRandom().nextIntBetweenInclusive(600, 1200);
@@ -149,6 +167,10 @@ public class MeouEntity extends PathfinderMob {
         MeouDialogue.sayDeath(this);
     }
 
+    /**
+     * Try to bind the nearest player as owner on spawn so the companion becomes
+     * useful immediately without an extra setup command.
+     */
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, net.minecraft.world.DifficultyInstance difficulty, net.minecraft.world.entity.MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
         this.tryAutoAssignOwner();

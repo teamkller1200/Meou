@@ -10,6 +10,9 @@ import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.resources.ResourceLocation;
 
+/**
+ * Renders the Meou model and adds the item-in-hand layer used by the attack skill.
+ */
 public class MeouRenderer extends MobRenderer<MeouEntity, MeouModel> {
     private static final ResourceLocation TEXTURE =
         ResourceLocation.fromNamespaceAndPath(Meou.MOD_ID, "textures/entity/meou.png");

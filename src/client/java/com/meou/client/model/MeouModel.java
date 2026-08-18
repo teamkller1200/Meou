@@ -14,6 +14,10 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.world.entity.HumanoidArm;
 
+/**
+ * Lightweight placeholder model used for the companion's visible body.
+ * It implements ArmedModel so the companion can render a held item in-hand.
+ */
 public class MeouModel extends HierarchicalModel<MeouEntity> implements ArmedModel {
     private final ModelPart root;
     private final ModelPart body;

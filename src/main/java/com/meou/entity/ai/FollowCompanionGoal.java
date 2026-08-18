@@ -17,6 +17,10 @@ import net.minecraft.world.phys.Vec3;
 import com.meou.Meou;
 import com.meou.entity.MeouEntity;
 
+/**
+ * Keeps the companion in a stable formation orbit around the owner.
+ * The angle is derived from the companion UUID so multiple companions do not stack on top of each other.
+ */
 public class FollowCompanionGoal extends Goal {
     private static final Logger LOGGER = LoggerFactory.getLogger(Meou.MOD_ID);
 
@@ -40,6 +44,10 @@ public class FollowCompanionGoal extends Goal {
         this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
     }
 
+    /**
+     * Deterministic pseudo-random offset based on entity UUID.
+     * This keeps each companion in a different orbit slot around the owner.
+     */
     private static double deriveFormationAngle(MeouEntity companion) {
         long bits = companion.getUUID().getMostSignificantBits();
         long h = bits * 0x9E3779B97F4A7C15L;

@@ -1,5 +1,10 @@
 package com.meou;
 
+/**
+ * Mod entry point.
+ * The server-side packet handlers are registered here so the companion can
+ * receive skill selection and rename requests from the client.
+ */
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -32,6 +37,10 @@ public class Meou implements ModInitializer {
         registerPayloads();
     }
 
+    /**
+     * Client-to-server packets used by the GUI.
+     * Skill changes and rename requests are translated into server-side entity updates.
+     */
     private static void registerPayloads() {
         PayloadTypeRegistry.playC2S().register(SkillSelectPayload.TYPE, SkillSelectPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(RenamePayload.TYPE, RenamePayload.CODEC);

@@ -11,6 +11,9 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SpawnEggItem;
 
+/**
+ * Item registration and creative-tab placement for Meou.
+ */
 public class ModItems {
     public static final Item MEOU_SPAWN_EGG = new SpawnEggItem(
         ModEntityTypes.MEOU,
