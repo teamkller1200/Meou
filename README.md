@@ -71,9 +71,14 @@ No external AI (LLM) of any kind is used. All behavior is implemented with vanil
    - Items tab: inventory operations
    - Skill tab: skill selection + description + rename (inventory hidden, compact panel)
 
-### Out of Scope (Phase 2+)
+### Phase 2 (implemented)
 
-- Multiple companion management
+- **Multiple companions**: A player can own multiple Meou. Each follows to its own
+  formation slot — a 5-block radius ring around the owner, with a pseudo-random angle
+  derived deterministically from the entity UUID (so mobs spread out instead of stacking).
+
+### Out of Scope (Phase 3+)
+
 - Sit command
 - Idle animations (head tilt, yawn)
 - Sound effects

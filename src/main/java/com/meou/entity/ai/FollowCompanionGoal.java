@@ -12,15 +12,21 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.minecraft.world.phys.Vec3;
+
 import com.meou.Meou;
 import com.meou.entity.MeouEntity;
 
 public class FollowCompanionGoal extends Goal {
     private static final Logger LOGGER = LoggerFactory.getLogger(Meou.MOD_ID);
 
+    private static final double FORMATION_RADIUS = 5.0D;
+    private static final double FULL_CIRCLE = 2.0D * Math.PI;
+
     private final MeouEntity companion;
     private final double followDistance;
     private final double teleportDistance;
+    private final double formationAngle;
     @Nullable
     private LivingEntity owner;
     private int timeToRecalcPath;
@@ -30,7 +36,28 @@ public class FollowCompanionGoal extends Goal {
         this.companion = companion;
         this.followDistance = followDistance;
         this.teleportDistance = teleportDistance;
+        this.formationAngle = deriveFormationAngle(companion);
         this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+    }
+
+    private static double deriveFormationAngle(MeouEntity companion) {
+        long bits = companion.getUUID().getMostSignificantBits();
+        long h = bits * 0x9E3779B97F4A7C15L;
+        h ^= h >>> 32;
+        double ratio = (h & Long.MAX_VALUE) / (double) Long.MAX_VALUE;
+        return ratio * FULL_CIRCLE;
+    }
+
+    private Vec3 targetAroundOwner() {
+        if (this.owner == null) {
+            return null;
+        }
+        Vec3 pos = this.owner.position();
+        return pos.add(
+            Math.cos(this.formationAngle) * FORMATION_RADIUS,
+            0.0D,
+            Math.sin(this.formationAngle) * FORMATION_RADIUS
+        );
     }
 
     @Override
@@ -39,7 +66,8 @@ public class FollowCompanionGoal extends Goal {
         if (this.owner == null) {
             return false;
         }
-        return this.companion.distanceToSqr(this.owner) > 6.25D;
+        Vec3 target = this.targetAroundOwner();
+        return target != null && this.companion.distanceToSqr(target.x, target.y, target.z) > 6.25D;
     }
 
     @Override
@@ -47,7 +75,8 @@ public class FollowCompanionGoal extends Goal {
         if (this.owner == null) {
             return false;
         }
-        return this.companion.distanceToSqr(this.owner) > 6.25D;
+        Vec3 target = this.targetAroundOwner();
+        return target != null && this.companion.distanceToSqr(target.x, target.y, target.z) > 6.25D;
     }
 
     @Override
@@ -72,8 +101,8 @@ public class FollowCompanionGoal extends Goal {
         }
         this.companion.getLookControl().setLookAt(this.owner, 10.0F, (float) this.companion.getMaxHeadXRot());
 
-        double distSqr = this.companion.distanceToSqr(this.owner);
-        if (distSqr > this.teleportDistance * this.teleportDistance) {
+        double ownerDistSqr = this.companion.distanceToSqr(this.owner);
+        if (ownerDistSqr > this.teleportDistance * this.teleportDistance) {
             this.companion.teleportToOwner(this.owner);
             this.tryTeleportToNear(this.companion, this.owner);
             com.meou.entity.skill.MeouDialogue.say(this.companion, "teleport");
@@ -82,15 +111,20 @@ public class FollowCompanionGoal extends Goal {
 
         if (--this.timeToRecalcPath <= 0) {
             this.timeToRecalcPath = this.adjustedTickDelay(10);
-            if (distSqr > this.followDistance * this.followDistance && distSqr > 6.25D) {
+            Vec3 target = this.targetAroundOwner();
+            if (target != null && this.companion.distanceToSqr(target.x, target.y, target.z) > 6.25D) {
                 PathNavigation navigation = this.companion.getNavigation();
-                navigation.moveTo(this.owner, 1.0D);
+                navigation.moveTo(target.x, target.y, target.z, 1.0D);
             }
         }
     }
 
     private void tryTeleportToNear(MeouEntity companion, LivingEntity owner) {
+        Vec3 target = this.targetAroundOwner();
+        if (target == null) {
+            return;
+        }
         PathNavigation navigation = companion.getNavigation();
-        navigation.moveTo(owner, 1.0D);
+        navigation.moveTo(target.x, target.y, target.z, 1.0D);
     }
 }
