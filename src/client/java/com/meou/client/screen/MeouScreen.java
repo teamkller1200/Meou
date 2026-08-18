@@ -16,6 +16,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 
+/**
+ * Inventory and skill tab GUI for Meou.
+ * The screen swaps between the normal item container and the compact skill panel
+ * without reloading the whole menu.
+ */
 public class MeouScreen extends AbstractContainerScreen<MeouScreenHandler> {
     private static final ResourceLocation TEXTURE =
         ResourceLocation.fromNamespaceAndPath(Meou.MOD_ID, "textures/gui/container/meou.png");
@@ -117,6 +122,9 @@ public class MeouScreen extends AbstractContainerScreen<MeouScreenHandler> {
         }
     }
 
+    /**
+     * Draws the top tabs that switch between inventory and skill UI.
+     */
     private void renderTabs(GuiGraphics graphics, int x, int y) {
         this.renderTab(graphics, x + TAB_X, y + TAB_Y, TAB_INVENTORY,
             Component.translatable("tab.meou.inventory"));

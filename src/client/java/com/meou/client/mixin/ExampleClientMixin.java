@@ -6,6 +6,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/**
+ * Template client mixin left for future hook points.
+ * When a real client-side hook is added, this file should be updated and registered in
+ * the corresponding mixin JSON.
+ */
 @Mixin(Minecraft.class)
 public class ExampleClientMixin {
 	@Inject(at = @At("HEAD"), method = "run")

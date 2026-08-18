@@ -13,6 +13,10 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 
+/**
+ * Client-side registration entry point.
+ * The model, renderer, and GUI are attached here so they can be used only on the client.
+ */
 public class MeouClient implements ClientModInitializer {
     public static final ModelLayerLocation MEOU_LAYER =
         new ModelLayerLocation(Meou.id("meou"), "main");

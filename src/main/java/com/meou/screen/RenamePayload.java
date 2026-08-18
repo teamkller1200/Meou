@@ -6,6 +6,9 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
+/**
+ * Payload sent from the client when the player updates the companion name.
+ */
 public record RenamePayload(int entityId, String name) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<RenamePayload> TYPE =
         new CustomPacketPayload.Type<>(Meou.id("rename"));
