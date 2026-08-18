@@ -48,8 +48,8 @@ public class MeouEntity extends PathfinderMob {
     public static final int TOTAL_SLOTS = 1 + STORAGE_SLOTS;
 
     private static final int UNOWNED_DESPAWN_TICKS = 100;
-    private static final int MEOW_INTERVAL_MIN = 600;
-    private static final int MEOW_INTERVAL_MAX = 1200;
+    private static final int MEOW_INTERVAL_MIN = 300;
+    private static final int MEOW_INTERVAL_MAX = 900;
 
     @Nullable
     private UUID ownerId;
