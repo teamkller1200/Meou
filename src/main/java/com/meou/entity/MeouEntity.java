@@ -79,10 +79,10 @@ public class MeouEntity extends PathfinderMob {
 
     public static AttributeSupplier.Builder createMobAttributes() {
         return PathfinderMob.createMobAttributes()
-            .add(Attributes.MAX_HEALTH, 20.0D)
-            .add(Attributes.MOVEMENT_SPEED, 0.32D)
-            .add(Attributes.FOLLOW_RANGE, 48.0D)
-            .add(Attributes.ATTACK_DAMAGE, 1.0D);
+                .add(Attributes.MAX_HEALTH, 20.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.32D)
+                .add(Attributes.FOLLOW_RANGE, 48.0D)
+                .add(Attributes.ATTACK_DAMAGE, 1.0D);
     }
 
     @Override
@@ -100,7 +100,8 @@ public class MeouEntity extends PathfinderMob {
 
     /**
      * Server-side update loop.
-     * Unowned mobs despawn after a short timeout and attack/follow-related timers are
+     * Unowned mobs despawn after a short timeout and attack/follow-related timers
+     * are
      * updated here so each companion behaves as a lightweight autonomous NPC.
      */
     @Override
@@ -133,7 +134,8 @@ public class MeouEntity extends PathfinderMob {
      */
     private void tryMeow() {
         if (this.nextMeowTick == 0) {
-            this.nextMeowTick = this.tickCount + this.getRandom().nextIntBetweenInclusive(MEOW_INTERVAL_MIN, MEOW_INTERVAL_MAX);
+            this.nextMeowTick = this.tickCount
+                    + this.getRandom().nextIntBetweenInclusive(MEOW_INTERVAL_MIN, MEOW_INTERVAL_MAX);
         }
         if (this.tickCount < this.nextMeowTick) {
             return;
@@ -143,12 +145,14 @@ public class MeouEntity extends PathfinderMob {
             float pitch = 0.8F + this.getRandom().nextFloat() * 0.4F;
             this.playSound(meows[this.getRandom().nextInt(meows.length)], 1.0F, pitch);
         }
-        this.nextMeowTick = this.tickCount + this.getRandom().nextIntBetweenInclusive(MEOW_INTERVAL_MIN, MEOW_INTERVAL_MAX);
+        this.nextMeowTick = this.tickCount
+                + this.getRandom().nextIntBetweenInclusive(MEOW_INTERVAL_MIN, MEOW_INTERVAL_MAX);
     }
 
     /**
      * Background idle chatter. It is intentionally separate from skill-triggered
-     * dialogue so the companion can speak at a natural rhythm while the player is idle.
+     * dialogue so the companion can speak at a natural rhythm while the player is
+     * idle.
      */
     private void tryMumble() {
         if (this.nextMumbleTick == 0) {
@@ -172,7 +176,8 @@ public class MeouEntity extends PathfinderMob {
      * useful immediately without an extra setup command.
      */
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, net.minecraft.world.DifficultyInstance difficulty, net.minecraft.world.entity.MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, net.minecraft.world.DifficultyInstance difficulty,
+            net.minecraft.world.entity.MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
         this.tryAutoAssignOwner();
         return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
     }
@@ -246,7 +251,7 @@ public class MeouEntity extends PathfinderMob {
     }
 
     private static double getHeldItemAttackDamage(ItemStack stack) {
-        double[] damage = {1.0D};
+        double[] damage = { 1.0D };
         if (!stack.isEmpty()) {
             stack.forEachModifier(EquipmentSlot.MAINHAND, (holder, modifier) -> {
                 if (holder.is(Attributes.ATTACK_DAMAGE)) {
@@ -266,9 +271,8 @@ public class MeouEntity extends PathfinderMob {
         if (!this.level().isClientSide) {
             if (player.isShiftKeyDown() && player == getOwner()) {
                 player.openMenu(new SimpleMenuProvider(
-                    (syncId, inv, p) -> new MeouScreenHandler(syncId, inv, this.inventory, this),
-                    Component.translatable("container.meou.meou")
-                ));
+                        (syncId, inv, p) -> new MeouScreenHandler(syncId, inv, this.inventory, this),
+                        Component.translatable("container.meou.meou")));
                 return InteractionResult.CONSUME;
             }
         }
@@ -278,12 +282,11 @@ public class MeouEntity extends PathfinderMob {
     public void teleportToOwner(LivingEntity owner) {
         Vec3 pos = owner.position();
         this.moveTo(
-            pos.x,
-            pos.y + owner.getBbHeight(),
-            pos.z,
-            owner.getYRot(),
-            0.0F
-        );
+                pos.x,
+                pos.y + owner.getBbHeight(),
+                pos.z,
+                owner.getYRot(),
+                0.0F);
     }
 
     public boolean tryAutoAssignOwner() {
