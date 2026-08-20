@@ -88,7 +88,7 @@ public class MeouEntity extends PathfinderMob {
                 return MeouEntity.this.attackModeTicks > 0 && super.canUse();
             }
         });
-        this.goalSelector.addGoal(2, new FollowCompanionGoal(this, 2.5D, 32.0D));
+        this.goalSelector.addGoal(2, new FollowCompanionGoal(this, 3D, 32.0D));
         this.goalSelector.addGoal(3, new SkillAutoTriggerGoal(this));
     }
 

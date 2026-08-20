@@ -25,7 +25,7 @@ import com.meou.entity.MeouEntity;
 public class FollowCompanionGoal extends Goal {
     private static final Logger LOGGER = LoggerFactory.getLogger(Meou.MOD_ID);
 
-    private static final double FORMATION_RADIUS = 2.5D;
+    private static final double FORMATION_RADIUS = 3D;
     private static final double FULL_CIRCLE = 2.0D * Math.PI;
 
     private final MeouEntity companion;

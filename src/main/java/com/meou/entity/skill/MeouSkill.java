@@ -69,16 +69,12 @@ public enum MeouSkill {
 
         @Override
         public void activate(MeouEntity companion) {
-            Player owner = companion.getOwner();
-            if (owner == null) {
-                return;
-            }
             for (ItemEntity item : companion.level().getEntitiesOfClass(
                     ItemEntity.class,
                     companion.getBoundingBox().inflate(8.0D),
                     entity -> entity.isAlive())) {
                 ItemStack stack = item.getItem().copy();
-                owner.getInventory().add(stack);
+                stack = companion.getInventory().addItem(stack);
                 item.setItem(stack);
                 if (stack.isEmpty()) {
                     item.discard();
