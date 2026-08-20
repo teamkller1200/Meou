@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -36,7 +35,6 @@ import com.meou.Meou;
 import com.meou.entity.ai.FollowCompanionGoal;
 import com.meou.entity.skill.MeouDialogue;
 import com.meou.entity.skill.MeouSkill;
-import com.meou.entity.skill.ModSounds;
 import com.meou.entity.skill.SkillAutoTriggerGoal;
 import com.meou.screen.MeouScreenHandler;
 
@@ -53,9 +51,6 @@ public class MeouEntity extends PathfinderMob {
     public static final int TOTAL_SLOTS = 1 + STORAGE_SLOTS;
 
     private static final int UNOWNED_DESPAWN_TICKS = 100;
-    private static final int MEOW_INTERVAL_MIN = 300;
-    private static final int MEOW_INTERVAL_MAX = 900;
-
     @Nullable
     private UUID ownerId;
 
@@ -66,7 +61,6 @@ public class MeouEntity extends PathfinderMob {
     private int attackModeTicks;
     private int lastDialogueTick;
     private int nextMumbleTick;
-    private int nextMeowTick;
     private ItemStack lastHeldItem = ItemStack.EMPTY;
 
     private final SimpleContainer inventory = new SimpleContainer(TOTAL_SLOTS);
@@ -125,28 +119,6 @@ public class MeouEntity extends PathfinderMob {
         }
         this.updateHeldAttackDamage();
         this.tryMumble();
-        this.tryMeow();
-    }
-
-    /**
-     * Random cat-like ambient sound. The interval is randomized independently of
-     * chat dialogue to keep the companion feeling alive without becoming noisy.
-     */
-    private void tryMeow() {
-        if (this.nextMeowTick == 0) {
-            this.nextMeowTick = this.tickCount
-                    + this.getRandom().nextIntBetweenInclusive(MEOW_INTERVAL_MIN, MEOW_INTERVAL_MAX);
-        }
-        if (this.tickCount < this.nextMeowTick) {
-            return;
-        }
-        SoundEvent[] meows = ModSounds.MEOU_MEOWS;
-        if (meows.length > 0) {
-            float pitch = 0.8F + this.getRandom().nextFloat() * 0.4F;
-            this.playSound(meows[this.getRandom().nextInt(meows.length)], 1.0F, pitch);
-        }
-        this.nextMeowTick = this.tickCount
-                + this.getRandom().nextIntBetweenInclusive(MEOW_INTERVAL_MIN, MEOW_INTERVAL_MAX);
     }
 
     /**
