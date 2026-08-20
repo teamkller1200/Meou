@@ -1,4 +1,4 @@
-# Minecraft Companion Meou — MVP Specification
+# Minecraft Companion Meou — Project Guide
 
 ## 1. Overview & Purpose
 
@@ -47,15 +47,14 @@ No external AI (LLM) of any kind is used. All behavior is implemented with vanil
    - Meou monitors conditions and **autonomously triggers** the skill when met
    - Cooldown prevents spam; the selected skill and cooldown are persisted to NBT
 
-   | Skill | Effect | Auto-trigger condition |
-   |:---|:---|:---|
-   | **Heal** | Removes poison + Regeneration II for 3s | Player HP ≤ 6, or poisoned, or on fire |
-   | **Cheer** | Grants Speed for 10s | Enemy within 8 blocks |
-   | **Collect** | Collects dropped items around | Dropped item within 8 blocks |
-   | **Alert** | Marks hostile mobs with glowing | Enemy within 8 blocks |
-   | **Light** | Places a torch in dark areas (consumes torch) | Dark area and owner has torches |
-   | **Attack** | Attacks the nearest enemy for 5s | Enemy within 10 blocks |
-
+   | Skill       | Effect                                        | Auto-trigger condition                 |
+   | :---------- | :-------------------------------------------- | :------------------------------------- |
+   | **Heal**    | Removes poison + Regeneration II for 3s       | Player HP ≤ 6, or poisoned, or on fire |
+   | **Cheer**   | Grants Speed for 10s                          | Enemy within 8 blocks                  |
+   | **Collect** | Collects dropped items around                 | Dropped item within 8 blocks           |
+   | **Alert**   | Marks hostile mobs with glowing               | Enemy within 8 blocks                  |
+   | **Light**   | Places a torch in dark areas (consumes torch) | Dark area and owner has torches        |
+   | **Attack**  | Attacks the nearest enemy for 5s              | Enemy within 10 blocks                 |
    - **Attack support**: attacks with the weapon damage of the held item (sword, etc.); bare hands deal minimal damage. Combat takes priority over following.
 
 3. **Rename (GUI)**
@@ -81,16 +80,20 @@ No external AI (LLM) of any kind is used. All behavior is implemented with vanil
 - **Random meow sounds**: Meou plays vanilla cat sounds (`CAT_AMBIENT` / `CAT_PURR` /
   `CAT_PURREOW`) at random intervals (every 30–60s) with a randomized pitch, independent
   of the chat dialogue.
+- **Spawn egg**: Meou can be spawned using the registered spawn egg from the creative inventory.
+- **Dialogue safeguards**: Skill, teleport, idle mumble, and death messages use cooldowns or
+  conditional triggers to avoid excessive chat output.
 
-### Out of Scope (Phase 3+)
+### Planned (Phase 3+)
 
 - Sit command
 - Idle animations (head tilt, yawn)
 - Particle effects
-- Spawn egg
 - Custom model & texture (cat-shaped)
 - Advanced automation (e.g. chest sorting)
 - Shielding the player (taking damage for them)
+
+For the prioritized human-readable list, see [TODO.md](TODO.md).
 
 ---
 
@@ -122,15 +125,15 @@ Minecraft Client / Server (Fabric 1.21.1)
 
 ## 4. Technology Stack
 
-| Component | Technology | Notes |
-| :--- | :--- | :--- |
-| **Minecraft Mod Core** | Fabric (Java 21) | 1.21.1 |
-| **Entity** | `PathfinderMob` extension | Vanilla AI reuse |
-| **GUI** | `AbstractContainerScreen` + `MenuType` | Tab switching, dynamic window size |
-| **Networking** | Fabric Networking (`CustomPacketPayload`) | C2S: skill selection, rename |
-| **Skills** | `enum` (`MeouSkill`) + Goal | Cooldown stored in NBT |
-| **Dialogue** | `MeouDialogue` | Translation keys + random selection |
-| **Model** | `HierarchicalModel` + `ModelPart` | Placeholder |
+| Component              | Technology                             | Notes                               |
+| :--------------------- | :------------------------------------- | :---------------------------------- |
+| **Minecraft Mod Core** | Fabric (Java 21)                       | 1.21.1                              |
+| **Entity**             | `PathfinderMob` extension              | Vanilla AI reuse                    |
+| **GUI**                | `AbstractContainerScreen` + `MenuType` | Tab switching, dynamic window size  |
+| **Networking**         | Fabric Networking (`CustomPayload`)    | C2S: skill selection, rename        |
+| **Skills**             | `enum` (`MeouSkill`) + Goal            | Cooldown stored in NBT              |
+| **Dialogue**           | `MeouDialogue`                         | Translation keys + random selection |
+| **Model**              | `HierarchicalModel` + `ModelPart`      | Placeholder                         |
 
 ---
 
