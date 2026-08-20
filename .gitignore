@@ -1,64 +1,58 @@
-# python / bridge
+# Meou - GitHub repository ignore rules
 
-.venv/
-__pycache__/
-*.pyc
-
-# gradle
-
+# Gradle and build output
 .gradle/
 build/
 out/
 classes/
 
-# eclipse
+# Fabric / Minecraft development runtime
+run/
 
-*.launch
-
-# idea
-
+# IDE project files and local editor settings
 .idea/
 *.iml
 *.ipr
 *.iws
-
-# vscode
-
-.settings/
 .vscode/
 bin/
 .classpath
 .project
+.settings/
+*.launch
 
-# macos
-
-*.DS_Store
-
-# fabric
-
-run/
-
-# java
-
-hs_err_*.log
+# Java crash dumps and profiler output
+hs_err_pid*.log
 replay_*.log
+crash-*.txt
 *.hprof
 *.jfr
 
+# Python local environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
 
+# Operating system files
+.DS_Store
+Thumbs.db
+Desktop.ini
 
-# aion tool cache
+# Local tools, notes, and temporary editor files
 .aionrs/
-
-# obsidian vault
 .obsidian/
-
-# personal notes and local settings
 *.local
 *.local.*
 *.swp
 *.swo
 
-# github
-.github/
+# Environment files and local secrets
+.env
+.env.*
+!.env.example
+
+# GitHub workflow and repository metadata must remain shareable
+!.github/
+!.github/**
 TODO.md

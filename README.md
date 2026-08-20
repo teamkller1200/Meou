@@ -1,224 +1,86 @@
-# Minecraft Companion Meou — Project Guide
+# Meou
 
-## 1. Overview & Purpose
+> Minecraft 1.21.1 に、プレイヤーを支える猫型コンパニオンを追加する Fabric mod
 
-This project is a **Fabric mod** (MC 1.21.1) that adds a **cat-like companion "Meou" (ミュー)** to Minecraft. Meou follows the player, and automatically triggers a player-configured skill based on the situation to support the player.
+[![Minecraft](https://img.shields.io/badge/Minecraft-1.21.1-5b7f3a)](https://www.minecraft.net/)
+[![Fabric](https://img.shields.io/badge/Mod%20loader-Fabric-dbd0b3)](https://fabricmc.net/)
+[![Java](https://img.shields.io/badge/Java-21-e76f00)](https://adoptium.net/)
 
-No external AI (LLM) of any kind is used. All behavior is implemented with vanilla Minecraft Entity/AI systems.
+Meou（ミュー）は、プレイヤーを「パートナー」として追従し、状況に応じて設定したスキルを自動で使うコンパニオンです。
 
-### Concept
+## できること
 
-- Companion name: **Meou** (ミュー)
-- Cat-like bipedal character (white/cream base)
-- Treats the player as its "partner" and always follows from behind
-- Automatically triggers the skill set by the player based on the situation
-- Sends "Nya"-style (〜ニャ) lines to chat during actions
+- プレイヤーを追従し、距離が開いたときはテレポートして合流
+- スポーン時に近くのプレイヤーを所有者として設定
+- 複数体を所有可能。各個体がプレイヤーの周囲に分散して追従
+- 手持ちアイテム 1 スロットと保管用 27 スロットのインベントリ
+- 所有者の操作で開ける Items / Skill タブ付き GUI
+- GUI から名前と自動発動スキルを変更
+- 行動・つぶやき・死亡時の会話と、ランダムな猫の鳴き声
+- クリエイティブインベントリから使えるスポーンエッグ
 
----
+### スキル
 
-## 2. MVP Scope
+Meou は一度に 1 つのスキルを装備し、条件を満たすと自動で発動します。クールダウンと選択中のスキルは保存されます。
 
-### Premise Features (base behavior, always active)
+| スキル  | 効果                           | 発動条件                           |
+| ------- | ------------------------------ | ---------------------------------- |
+| Heal    | 毒を解除し、再生効果を付与     | プレイヤーの体力が少ない、毒、炎上 |
+| Cheer   | 移動速度上昇を付与             | 近くに敵がいる                     |
+| Collect | 周囲に落ちたアイテムを回収     | 近くに落ちたアイテムがある         |
+| Alert   | 周囲の敵を発光させる           | 近くに敵がいる                     |
+| Light   | 松明を消費して暗い場所を照らす | 暗所かつ松明を所持                 |
+| Attack  | 近くの敵を攻撃                 | 近くに敵がいる                     |
 
-1. **Player following & teleporting**
-   - Follows behind the player at a distance of 2–3 blocks
-   - Teleports when the player moves too far away to prevent falling behind
-   - `FollowCompanionGoal` (implemented)
+Attack は手持ち武器の攻撃力を利用します。
 
-2. **Automatic owner assignment**
-   - On spawn, the nearest player is automatically assigned as the owner
-   - Owner UUID is stored in the NBT key `Owner`
+## 導入
 
-3. **Despawn when unowned**
-   - Despawns 5 seconds after spawning if no owner has been assigned
+現在は開発版です。リリースページに配布 jar が公開されていない場合は、ソースからビルドしてください。
 
-4. **Always-visible name plate**
-   - The name (default "Meou", or a user-set name) is always shown above the head
+1. Minecraft 1.21.1 用の Fabric Loader と Fabric API をインストールします。
+2. `build/libs/` に生成された `meou-*.jar` を、Fabric プロファイルの `mods/` フォルダーへコピーします。
+3. Minecraft を起動し、スポーンエッグまたはコマンドで Meou を召喚します。
 
-### Included Features
+## 開発環境
 
-1. **Item holding & storage**
-   - 1 hand slot + 27 storage slots = 28 slots total
-   - Shift+right-click (owner) opens the tabbed GUI
-   - The held item contributes damage to the attack skill
+必要なもの:
 
-2. **Skill system (one skill at a time, auto-trigger)**
-   - Set **one skill** via the GUI (default: Heal)
-   - Meou monitors conditions and **autonomously triggers** the skill when met
-   - Cooldown prevents spam; the selected skill and cooldown are persisted to NBT
+- JDK 21
+- Git
 
-   | Skill       | Effect                                        | Auto-trigger condition                 |
-   | :---------- | :-------------------------------------------- | :------------------------------------- |
-   | **Heal**    | Removes poison + Regeneration II for 3s       | Player HP ≤ 6, or poisoned, or on fire |
-   | **Cheer**   | Grants Speed for 10s                          | Enemy within 8 blocks                  |
-   | **Collect** | Collects dropped items around                 | Dropped item within 8 blocks           |
-   | **Alert**   | Marks hostile mobs with glowing               | Enemy within 8 blocks                  |
-   | **Light**   | Places a torch in dark areas (consumes torch) | Dark area and owner has torches        |
-   | **Attack**  | Attacks the nearest enemy for 5s              | Enemy within 10 blocks                 |
-   - **Attack support**: attacks with the weapon damage of the held item (sword, etc.); bare hands deal minimal damage. Combat takes priority over following.
-
-3. **Rename (GUI)**
-   - Enter a name in the skill tab input field and press the "Set" button to change it
-   - Sent to the server via `RenamePayload` (C2S), which calls `setCustomName()`
-
-4. **Dialogue system**
-   - Random lines are sent to the owner's chat on skill activation and teleport
-   - Spam prevention (min. 3s interval), prefixed with `[name]`
-   - Idle "mumble" lines and random cat meow sounds (vanilla `CAT_*` events, random pitch)
-     play independently of chat
-
-5. **Tabbed GUI (vanilla-style)**
-   - "Items" and "Skill" tabs at the top (creative-tab style design)
-   - Items tab: inventory operations
-   - Skill tab: skill selection + description + rename (inventory hidden, compact panel)
-
-### Phase 2 (implemented)
-
-- **Multiple companions**: A player can own multiple Meou. Each follows to its own
-  formation slot — a 5-block radius ring around the owner, with a pseudo-random angle
-  derived deterministically from the entity UUID (so mobs spread out instead of stacking).
-- **Random meow sounds**: Meou plays vanilla cat sounds (`CAT_AMBIENT` / `CAT_PURR` /
-  `CAT_PURREOW`) at random intervals (every 30–60s) with a randomized pitch, independent
-  of the chat dialogue.
-- **Spawn egg**: Meou can be spawned using the registered spawn egg from the creative inventory.
-- **Dialogue safeguards**: Skill, teleport, idle mumble, and death messages use cooldowns or
-  conditional triggers to avoid excessive chat output.
-
-### Planned (Phase 3+)
-
-- Sit command
-- Idle animations (head tilt, yawn)
-- Particle effects
-- Custom model & texture (cat-shaped)
-- Advanced automation (e.g. chest sorting)
-- Shielding the player (taking damage for them)
-
-For the prioritized human-readable list, see [TODO.md](TODO.md).
-
----
-
-## 3. System Architecture
-
-```
-Minecraft Client / Server (Fabric 1.21.1)
-├── MeouEntity (PathfinderMob)
-│   ├── FollowCompanionGoal (follow & teleport)
-│   ├── MeleeAttackGoal (only active during attack support)
-│   ├── SkillAutoTriggerGoal (auto-trigger, cooldown)
-│   └── held item → attack damage (ATTACK_DAMAGE)
-├── MeouScreenHandler (server-side container, data sync)
-│   └── ModMenuTypes (menu registration)
-├── MeouScreen (client GUI)
-│   ├── Items tab / Skill tab
-│   └── Rename UI (EditBox)
-├── CustomPayload (C2S)
-│   ├── SkillSelectPayload (skill selection)
-│   └── RenamePayload (rename)
-├── MeouDialogue (line sending)
-├── MeouModel (custom model, placeholder)
-└── MeouRenderer (texture rendering)
-```
-
-**No AI/LLM components.** No Python bridge server required.
-
----
-
-## 4. Technology Stack
-
-| Component              | Technology                             | Notes                               |
-| :--------------------- | :------------------------------------- | :---------------------------------- |
-| **Minecraft Mod Core** | Fabric (Java 21)                       | 1.21.1                              |
-| **Entity**             | `PathfinderMob` extension              | Vanilla AI reuse                    |
-| **GUI**                | `AbstractContainerScreen` + `MenuType` | Tab switching, dynamic window size  |
-| **Networking**         | Fabric Networking (`CustomPayload`)    | C2S: skill selection, rename        |
-| **Skills**             | `enum` (`MeouSkill`) + Goal            | Cooldown stored in NBT              |
-| **Dialogue**           | `MeouDialogue`                         | Translation keys + random selection |
-| **Model**              | `HierarchicalModel` + `ModelPart`      | Placeholder                         |
-
----
-
-## 5. Building & Running
-
-### Prerequisites
-
-- **JDK 21** (required). The default `java` on this machine is JDK 17, so set `JAVA_HOME` before running.
-- Fabric Loom and Minecraft dependencies are downloaded automatically by Gradle on first run.
-- Mojang official mappings are used (not Yarn). Methods are named by Mojang naming (e.g. `PathfinderMob`).
-
-### Build
+依存関係は Gradle が自動で取得します。Windows では `gradlew.bat`、macOS / Linux では `./gradlew` を使用してください。
 
 ```powershell
-$env:JAVA_HOME = "C:\Program Files\Java\jdk-21.0.2"
+# Windows PowerShell
 .\gradlew.bat build
-```
-
-The resulting mod jar is written to `build/libs/`.
-
-### Run (client / server)
-
-```powershell
-$env:JAVA_HOME = "C:\Program Files\Java\jdk-21.0.2"
 .\gradlew.bat runClient
-# or
-.\gradlew.bat runServer
 ```
 
-The `run/` directory is a gitignored development workspace.
-
-### Generate Minecraft sources (for IDE navigation)
-
-```powershell
-.\gradlew.bat genSources
+```bash
+# macOS / Linux
+./gradlew build
+./gradlew runClient
 ```
 
-> **Note (Windows):** use `.\gradlew.bat` — `./gradlew` does not work in PowerShell.
+生成物は `build/libs/` に出力されます。Minecraft のソースを IDE から参照したい場合は、次を実行します。
 
----
-
-## 6. File Structure
-
+```bash
+./gradlew genSources
 ```
-src/
-├── main/java/com/meou/
-│   ├── Meou.java                  # Mod entry point, payload registration
-│   ├── entity/
-│   │   ├── ModEntityTypes.java      # Entity registration
-│   │   ├── MeouEntity.java          # Meou entity
-│   │   ├── ai/
-│   │   │   └── FollowCompanionGoal.java  # Follow goal
-│   │   └── skill/
-│   │       ├── MeouSkill.java       # Skill enum (6 types)
-│   │       ├── SkillAutoTriggerGoal.java  # Auto-trigger goal
-│   │       └── MeouDialogue.java    # Line sending
-│   ├── screen/
-│   │   ├── ModMenuTypes.java        # Menu type registration
-│   │   ├── MeouScreenHandler.java   # Server-side container
-│   │   ├── SkillSelectPayload.java  # Skill selection packet
-│   │   └── RenamePayload.java       # Rename packet
-│   └── mixin/
-│       └── ExampleMixin.java        # Template-derived (unused)
-├── client/java/com/meou/client/
-│   ├── MeouClient.java            # Client entry point
-│   ├── screen/
-│   │   └── MeouScreen.java          # Tabbed GUI (items / skill / rename)
-│   ├── model/
-│   │   └── MeouModel.java           # Custom model (placeholder)
-│   ├── renderer/
-│   │   └── MeouRenderer.java        # Texture rendering
-│   └── mixin/
-│       └── ExampleClientMixin.java  # Template-derived (unused)
-└── main/resources/
-    ├── assets/meou/
-    │   ├── lang/
-    │   │   ├── ja_jp.json           # Japanese translations (skill names, descriptions, lines)
-    │   │   └── en_us.json           # English translations
-    │   └── textures/
-    │       ├── entity/meou.png
-    │       └── gui/
-    │           ├── meou_tab_selected.png
-    │           ├── meou_tab_unselected.png
-    │           └── container/meou.png
-    ├── fabric.mod.json
-    ├── meou.mixins.json
-    └── meou.client.mixins.json
+
+## プロジェクト構成
+
+```text
+src/main/java/       サーバー共通のエンティティ、AI、スキル、GUI、通信
+src/client/java/     クライアント専用の画面、モデル、レンダラー
+src/main/resources/  mod metadata、言語ファイル、テクスチャ
 ```
+
+主な実装:
+
+- `MeouEntity`: コンパニオン本体と所有者・インベントリの管理
+- `FollowCompanionGoal`: 追従、複数体の隊列、テレポート
+- `SkillAutoTriggerGoal`: スキルの条件判定と自動発動
+- `MeouScreenHandler` / `MeouScreen`: インベントリとスキル設定 GUI
+- `MeouDialogue`: 会話、クールダウン、鳴き声
